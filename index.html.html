@@ -1,0 +1,2563 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="AOM HW Track — manish sharma">
+<title>AOM HW Track — manish sharma</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Noto+Sans+Devanagari:wght@400;500;600;700&display=swap');
+
+:root {
+  --ink: #0f172a;
+  --ink2: #334155;
+  --ink3: #64748b;
+  --ink4: #94a3b8;
+  --border: #e2e8f0;
+  --bg: #f8fafc;
+  --white: #ffffff;
+  --primary: #4f46e5;
+  --primary-d: #3730a3;
+  --primary-l: #eef2ff;
+  --green: #059669;
+  --green-l: #d1fae5;
+  --red: #dc2626;
+  --red-l: #fee2e2;
+  --amber: #d97706;
+  --amber-l: #fef3c7;
+  --blue: #0284c7;
+  --blue-l: #e0f2fe;
+  --purple: #7c3aed;
+  --purple-l: #ede9fe;
+  --pink: #db2777;
+  --pink-l: #fce7f3;
+  --wa: #25D366;
+  --radius: 16px;
+  --radius-sm: 10px;
+  --shadow: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.04);
+  --shadow-md: 0 4px 16px rgba(0,0,0,0.10);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+html { scroll-behavior: smooth; }
+body { font-family: 'Inter', -apple-system, sans-serif; background: var(--bg); color: var(--ink); min-height: 100vh; overscroll-behavior: none; }
+
+/* ===== SPLASH ===== */
+#splash {
+  position: fixed; inset: 0; z-index: 9999;
+  background: linear-gradient(145deg, #4f46e5 0%, #7c3aed 50%, #db2777 100%);
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  transition: opacity 0.6s ease;
+}
+#splash.hide { opacity: 0; pointer-events: none; }
+.splash-icon { font-size: 72px; margin-bottom: 20px; animation: bounce 1s ease infinite alternate; }
+.splash-title { font-size: 28px; font-weight: 900; color: white; letter-spacing: -0.5px; }
+.splash-sub { font-size: 14px; color: rgba(255,255,255,0.7); margin-top: 6px; font-weight: 500; }
+.splash-loader { margin-top: 40px; width: 48px; height: 4px; background: rgba(255,255,255,0.2); border-radius: 4px; overflow: hidden; }
+.splash-loader::after { content:''; display:block; width:40%; height:100%; background:white; border-radius:4px; animation: slide 1s ease infinite; }
+@keyframes slide { 0%{transform:translateX(-100%)} 100%{transform:translateX(350%)} }
+@keyframes bounce { 0%{transform:translateY(0)} 100%{transform:translateY(-10px)} }
+
+/* ===== HEADER ===== */
+.header {
+  background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+  padding: 52px 20px 0;
+  position: sticky; top: 0; z-index: 100;
+  box-shadow: 0 4px 20px rgba(79,70,229,0.35);
+}
+.header-inner { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
+.header-avatar {
+  width: 44px; height: 44px; border-radius: 50%;
+  background: rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center;
+  font-size: 22px; border: 2px solid rgba(255,255,255,0.4); flex-shrink: 0;
+}
+.header-info { flex: 1; }
+.header-greeting { font-size: 12px; color: rgba(255,255,255,0.7); font-weight: 500; }
+.header-name { font-size: 17px; font-weight: 800; color: white; }
+.header-date { font-size: 11px; color: rgba(255,255,255,0.6); margin-top: 1px; }
+.header-notify { width: 40px; height: 40px; background: rgba(255,255,255,0.15); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 20px; cursor: pointer; position: relative; }
+.notify-dot { position:absolute; top:8px; right:8px; width:8px; height:8px; background:#f59e0b; border-radius:50%; border:2px solid transparent; }
+
+/* ===== TABS ===== */
+.tab-bar { display: flex; overflow-x: auto; scrollbar-width: none; padding-bottom: 1px; }
+.tab-bar::-webkit-scrollbar { display: none; }
+.tab { flex-shrink: 0; padding: 10px 16px; font-size: 12px; font-weight: 700; border: none; background: transparent; cursor: pointer; color: rgba(255,255,255,0.55); border-bottom: 3px solid transparent; transition: all .2s; letter-spacing: 0.3px; white-space: nowrap; }
+.tab.active { color: white; border-bottom-color: white; }
+
+/* ===== VIEWS ===== */
+.view { display: none; padding: 16px 16px 100px; }
+.view.active { display: block; }
+
+/* ===== DASHBOARD ===== */
+.dash-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }
+.stat-card {
+  background: white; border-radius: var(--radius); padding: 16px;
+  box-shadow: var(--shadow); border: 1px solid var(--border); position: relative; overflow: hidden;
+}
+.stat-card::after { content:''; position:absolute; top:-20px; right:-20px; width:80px; height:80px; border-radius:50%; opacity:0.08; }
+.stat-card.c1::after { background:var(--primary); }
+.stat-card.c2::after { background:var(--green); }
+.stat-card.c3::after { background:var(--amber); }
+.stat-card.c4::after { background:var(--red); }
+.stat-icon { font-size: 24px; margin-bottom: 8px; }
+.stat-val { font-size: 26px; font-weight: 900; color: var(--ink); line-height: 1; }
+.stat-label { font-size: 11px; color: var(--ink3); font-weight: 600; margin-top: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+
+.section-head { font-size: 15px; font-weight: 800; color: var(--ink); margin: 20px 0 12px; display: flex; align-items: center; gap: 8px; }
+.section-head span { font-size: 18px; }
+
+/* Quick actions */
+.quick-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 20px; }
+.quick-btn {
+  background: white; border: 1px solid var(--border); border-radius: var(--radius-sm);
+  padding: 14px 6px; text-align: center; cursor: pointer; transition: transform .15s;
+  box-shadow: var(--shadow);
+}
+.quick-btn:active { transform: scale(0.95); }
+.quick-btn .q-icon { font-size: 26px; display: block; margin-bottom: 6px; }
+.quick-btn .q-label { font-size: 10px; font-weight: 700; color: var(--ink2); letter-spacing: 0.2px; line-height: 1.3; }
+
+/* Tips carousel */
+.tips-scroll { display: flex; gap: 12px; overflow-x: auto; scrollbar-width: none; padding-bottom: 4px; margin-bottom: 8px; }
+.tips-scroll::-webkit-scrollbar { display: none; }
+.tip-card {
+  flex-shrink: 0; width: 260px; border-radius: var(--radius); padding: 16px;
+  position: relative; overflow: hidden; cursor: pointer;
+}
+.tip-card .tip-tag { font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; opacity: 0.75; margin-bottom: 8px; }
+.tip-card .tip-title { font-size: 14px; font-weight: 800; margin-bottom: 6px; line-height: 1.4; }
+.tip-card .tip-body { font-size: 12px; line-height: 1.6; opacity: 0.85; }
+.tip-card .tip-img { font-size: 48px; position: absolute; right: 12px; top: 12px; opacity: 0.25; }
+.tc1 { background: linear-gradient(135deg,#4f46e5,#7c3aed); color: white; }
+.tc2 { background: linear-gradient(135deg,#059669,#0d9488); color: white; }
+.tc3 { background: linear-gradient(135deg,#d97706,#dc2626); color: white; }
+.tc4 { background: linear-gradient(135deg,#0284c7,#4f46e5); color: white; }
+.tc5 { background: linear-gradient(135deg,#db2777,#7c3aed); color: white; }
+
+/* Problem cards */
+.prob-card {
+  background: white; border-radius: var(--radius); padding: 16px;
+  border-left: 4px solid; margin-bottom: 12px; box-shadow: var(--shadow);
+  cursor: pointer;
+}
+.prob-card .pc-head { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+.prob-card .pc-icon { font-size: 24px; flex-shrink: 0; }
+.prob-card .pc-title { font-size: 14px; font-weight: 800; color: var(--ink); }
+.prob-card .pc-sub { font-size: 11px; color: var(--ink3); font-weight: 500; }
+.prob-card .pc-body { font-size: 12.5px; color: var(--ink2); line-height: 1.7; }
+.prob-card .pc-solution { font-size: 12px; color: var(--green); font-weight: 700; margin-top: 10px; display: flex; align-items: center; gap: 4px; }
+.prob-toggle { display: none; }
+
+/* ===== ENTRY ===== */
+.card { background: white; border-radius: var(--radius); padding: 18px; margin-bottom: 14px; box-shadow: var(--shadow); border: 1px solid var(--border); }
+.card-title { font-size: 14px; font-weight: 800; color: var(--ink); margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+.field { margin-bottom: 14px; }
+.field label { display: block; font-size: 11px; font-weight: 700; color: var(--ink3); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.6px; }
+.field select, .field input[type="text"], .field input[type="date"], .field input[type="tel"] {
+  width: 100%; padding: 13px 16px; border: 1.5px solid var(--border); border-radius: var(--radius-sm);
+  font-size: 15px; background: white; color: var(--ink); outline: none;
+  font-family: 'Inter', sans-serif; transition: border-color .2s;
+  -webkit-appearance: none; appearance: none;
+}
+.field select { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 14 14'%3E%3Cpath fill='%2364748b' d='M7 10L1 4h12z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 14px center; padding-right: 40px; }
+.field select:focus, .field input:focus { border-color: var(--primary); }
+.field input[readonly] { background: var(--bg); color: var(--ink2); }
+
+.name-display {
+  background: linear-gradient(135deg,var(--primary-l),#f5f3ff);
+  border: 1.5px solid var(--primary); border-radius: var(--radius-sm);
+  padding: 14px 16px; display: flex; align-items: center; gap: 12px; margin-bottom: 14px;
+}
+.name-display .nd-avatar { width: 40px; height: 40px; border-radius: 50%; background: var(--primary); display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: 800; color: white; flex-shrink: 0; }
+.name-display .nd-info .nd-name { font-size: 15px; font-weight: 800; color: var(--primary); }
+.name-display .nd-info .nd-meta { font-size: 11px; color: var(--ink3); margin-top: 2px; }
+
+/* Status buttons */
+.status-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
+.s-btn {
+  padding: 12px 6px; border: 2px solid var(--border); border-radius: var(--radius-sm);
+  font-size: 11px; font-weight: 700; cursor: pointer; background: white; color: var(--ink2);
+  text-align: center; transition: all .15s; line-height: 1.4; font-family: 'Inter', sans-serif;
+}
+.s-btn .s-ico { font-size: 22px; display: block; margin-bottom: 5px; }
+.s-btn .s-lbl { display: block; font-size: 10.5px; }
+.s-btn .s-sub { display: block; font-size: 9px; font-weight: 500; opacity: 0.65; margin-top: 2px; }
+.s-btn.sel-absent   { background:#f1f5f9; border-color:#64748b; color:#334155; }
+.s-btn.sel-cwcopy   { background:#fdf4ff; border-color:#a21caf; color:#7e22ce; }
+.s-btn.sel-hwcopy   { background:#fff7ed; border-color:#c2410c; color:#9a3412; }
+.s-btn.sel-incomplete { background: var(--red-l); border-color: var(--red); color: var(--red); }
+.s-btn.sel-still    { background: var(--amber-l); border-color: var(--amber); color: var(--amber); }
+.s-btn.sel-good     { background: var(--green-l); border-color: var(--green); color: var(--green); }
+.s-btn.sel-timely   { background: var(--blue-l); border-color: var(--blue); color: var(--blue); }
+.s-btn.sel-practice { background:#fef9c3; border-color:#ca8a04; color:#854d0e; }
+.s-btn.sel-notanswer{ background:#fee2e2; border-color:#b91c1c; color:#7f1d1d; }
+.s-btn.sel-ptm     { background: var(--purple-l); border-color: var(--purple); color: var(--purple); }
+.s-btn:active { transform: scale(0.97); }
+
+/* Remark */
+.remark-wrap { border-radius: var(--radius); padding: 18px; border-left: 5px solid; margin-bottom: 14px; position: relative; }
+.remark-lang-tag { position: absolute; top: 12px; right: 12px; font-size: 10px; font-weight: 800; background: rgba(0,0,0,0.08); padding: 3px 8px; border-radius: 20px; }
+.remark-section-title { font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.8px; opacity: 0.6; margin-bottom: 8px; }
+.remark-text { font-size: 13.5px; line-height: 1.85; color: var(--ink); }
+.remark-divider { height: 1px; background: rgba(0,0,0,0.08); margin: 14px 0; }
+.remark-hin { font-size: 13px; line-height: 1.9; color: var(--ink2); font-family: 'Noto Sans Devanagari', sans-serif; }
+
+/* Action buttons */
+.action-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 14px; }
+.act-btn { padding: 13px 8px; border-radius: var(--radius-sm); font-size: 11px; font-weight: 700; cursor: pointer; border: none; text-align: center; transition: all .15s; display: flex; flex-direction: column; align-items: center; gap: 5px; }
+.act-btn .ab-ico { font-size: 20px; }
+.act-copy { background: var(--bg); color: var(--ink2); border: 1.5px solid var(--border); }
+.act-wa-f { background: #dcfce7; color: #15803d; border: 1.5px solid #86efac; }
+.act-wa-m { background: #fce7f3; color: #9d174d; border: 1.5px solid #f9a8d4; }
+.act-btn:active { transform: scale(0.96); }
+
+.save-btn {
+  width: 100%; padding: 16px; background: linear-gradient(135deg,#4f46e5,#7c3aed);
+  color: white; border: none; border-radius: var(--radius-sm); font-size: 15px;
+  font-weight: 800; cursor: pointer; letter-spacing: 0.3px; box-shadow: 0 4px 14px rgba(79,70,229,0.4);
+  transition: transform .15s;
+}
+.save-btn:active { transform: scale(0.98); }
+
+/* ===== HISTORY ===== */
+.search-bar { display: flex; gap: 10px; margin-bottom: 14px; align-items: center; }
+.search-inp { flex: 1; padding: 12px 16px; border: 1.5px solid var(--border); border-radius: var(--radius-sm); font-size: 14px; background: white; outline: none; font-family: 'Inter', sans-serif; }
+.search-inp:focus { border-color: var(--primary); }
+.filter-scroll { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 4px; margin-bottom: 14px; scrollbar-width: none; }
+.filter-scroll::-webkit-scrollbar { display: none; }
+.f-chip { flex-shrink: 0; padding: 7px 16px; border: 1.5px solid var(--border); border-radius: 30px; font-size: 12px; font-weight: 700; background: white; cursor: pointer; color: var(--ink3); transition: all .15s; }
+.f-chip.on { background: var(--primary); color: white; border-color: var(--primary); }
+
+.h-card { background: white; border-radius: var(--radius); margin-bottom: 12px; box-shadow: var(--shadow); border: 1px solid var(--border); overflow: hidden; }
+.h-card-top { display: flex; align-items: flex-start; gap: 12px; padding: 14px 14px 10px; }
+.h-avatar { width: 42px; height: 42px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 800; color: white; flex-shrink: 0; }
+.h-info { flex: 1; }
+.h-name { font-size: 14px; font-weight: 800; }
+.h-meta { font-size: 11px; color: var(--ink3); margin-top: 2px; }
+.h-pill { padding: 4px 12px; border-radius: 30px; font-size: 11px; font-weight: 800; flex-shrink: 0; }
+.h-preview { font-size: 12px; color: var(--ink3); line-height: 1.6; padding: 0 14px 10px; border-top: 1px solid var(--border); padding-top: 10px; }
+.h-actions { display: flex; gap: 8px; padding: 10px 14px 14px; }
+.h-act { flex: 1; padding: 10px 6px; border-radius: var(--radius-sm); font-size: 11px; font-weight: 700; cursor: pointer; border: none; display: flex; align-items: center; justify-content: center; gap: 4px; }
+.h-copy { background: var(--bg); color: var(--ink2); border: 1px solid var(--border); }
+.h-waf { background: #dcfce7; color: #15803d; }
+.h-wam { background: #fce7f3; color: #9d174d; }
+
+/* ===== STUDENTS ===== */
+.sec-tabs { display: grid; grid-template-columns: repeat(auto-fill,minmax(70px,1fr)); gap: 8px; margin-bottom: 16px; }
+.sec-tab { padding: 12px 4px; border: 2px solid var(--border); border-radius: var(--radius-sm); font-size: 13px; font-weight: 800; background: white; cursor: pointer; color: var(--ink3); text-align: center; transition: all .15s; }
+.sec-tab .sec-count { display: block; font-size: 10px; font-weight: 600; opacity: 0.7; margin-top: 2px; }
+.sec-tab.on { background: linear-gradient(135deg,#4f46e5,#7c3aed); color: white; border-color: transparent; }
+.sec-tab.on .sec-count { opacity: 0.8; }
+
+.student-card { background: white; border-radius: var(--radius-sm); border: 1px solid var(--border); margin-bottom: 10px; overflow: hidden; }
+.sc-header { display: flex; align-items: center; gap: 10px; padding: 12px 14px; cursor: pointer; }
+.sc-roll { width: 36px; height: 36px; border-radius: 10px; background: var(--primary-l); color: var(--primary); display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 800; flex-shrink: 0; }
+.sc-name-inp { flex: 1; border: none; font-size: 14px; font-weight: 700; color: var(--ink); background: transparent; font-family: 'Inter', sans-serif; outline: none; }
+.sc-expand { font-size: 14px; color: var(--ink4); transition: transform .2s; }
+.sc-expand.open { transform: rotate(180deg); }
+.sc-body { display: none; padding: 0 14px 14px; border-top: 1px solid var(--border); }
+.sc-body.open { display: block; }
+.sc-body-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 12px; }
+.phone-field label { display: block; font-size: 10px; font-weight: 700; color: var(--ink3); margin-bottom: 5px; text-transform: uppercase; letter-spacing: 0.5px; }
+.phone-field input { width: 100%; padding: 10px 12px; border: 1.5px solid var(--border); border-radius: 8px; font-size: 13px; font-family: 'Inter', sans-serif; outline: none; }
+.phone-field input:focus { border-color: var(--primary); }
+.sc-del { display: flex; justify-content: flex-end; margin-top: 10px; }
+.del-btn { padding: 8px 16px; background: var(--red-l); color: var(--red); border: 1px solid #fca5a5; border-radius: 8px; font-size: 12px; font-weight: 700; cursor: pointer; }
+
+.add-student-btn { width: 100%; padding: 14px; border: 2px dashed var(--border); border-radius: var(--radius-sm); background: transparent; cursor: pointer; color: var(--ink3); font-size: 14px; font-weight: 700; margin-bottom: 14px; transition: all .15s; font-family: 'Inter', sans-serif; }
+.add-student-btn:hover { border-color: var(--primary); color: var(--primary); background: var(--primary-l); }
+
+/* ===== SUGGESTIONS (AI Tips) ===== */
+.sug-category { margin-bottom: 20px; }
+.sug-cat-title { font-size: 13px; font-weight: 800; color: var(--ink); margin-bottom: 10px; display: flex; align-items: center; gap: 6px; }
+.sug-card {
+  background: white; border-radius: var(--radius); padding: 16px;
+  border: 1px solid var(--border); margin-bottom: 10px; box-shadow: var(--shadow);
+  border-left: 4px solid;
+}
+.sug-card .sg-head { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 10px; }
+.sug-card .sg-icon { font-size: 28px; flex-shrink: 0; }
+.sug-card .sg-title { font-size: 14px; font-weight: 800; color: var(--ink); }
+.sug-card .sg-prob { font-size: 11px; color: var(--red); font-weight: 700; margin-top: 2px; }
+.sug-card .sg-body { font-size: 13px; color: var(--ink2); line-height: 1.75; }
+.sug-card .sg-steps { margin-top: 10px; }
+.sug-card .sg-step { display: flex; gap: 8px; margin-bottom: 7px; align-items: flex-start; }
+.sug-card .sg-step .step-num { width: 20px; height: 20px; border-radius: 50%; background: var(--primary); color: white; font-size: 10px; font-weight: 800; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; }
+.sug-card .sg-step .step-txt { font-size: 12.5px; color: var(--ink2); line-height: 1.6; }
+.sug-card .sg-quote { background: var(--primary-l); border-left: 3px solid var(--primary); padding: 10px 14px; border-radius: 0 8px 8px 0; margin-top: 10px; font-size: 12.5px; color: var(--primary-d); font-style: italic; line-height: 1.6; font-weight: 600; }
+
+/* ===== BOTTOM NAV ===== */
+.bottom-nav {
+  position: fixed; bottom: 0; left: 0; right: 0; max-width: 430px; margin: 0 auto;
+  background: white; border-top: 1px solid var(--border); display: flex;
+  padding: 8px 0 env(safe-area-inset-bottom, 12px);
+  box-shadow: 0 -4px 20px rgba(0,0,0,0.08); z-index: 100;
+}
+.nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; padding: 4px; transition: all .15s; }
+.nav-ico { font-size: 22px; transition: transform .2s; }
+.nav-lbl { font-size: 10px; font-weight: 700; color: var(--ink4); letter-spacing: 0.3px; }
+.nav-item.on .nav-ico { transform: translateY(-2px); }
+.nav-item.on .nav-lbl { color: var(--primary); }
+
+/* ===== MISC ===== */
+.toast { position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%); background: var(--ink); color: white; padding: 12px 24px; border-radius: 30px; font-size: 13px; font-weight: 700; z-index: 999; opacity: 0; transition: opacity .3s; pointer-events: none; white-space: nowrap; max-width: 85vw; text-align: center; }
+.empty { text-align: center; color: var(--ink3); font-size: 14px; padding: 3rem 1rem; }
+.empty .e-ico { font-size: 48px; margin-bottom: 12px; }
+.empty .e-txt { font-weight: 600; }
+.empty .e-sub { font-size: 12px; margin-top: 6px; }
+
+.badge { display: inline-flex; align-items: center; justify-content: center; background: var(--primary-l); color: var(--primary); font-size: 10px; font-weight: 800; padding: 3px 10px; border-radius: 20px; margin-left: 6px; }
+
+/* Pill colors */
+.pill-absent    { background:#f1f5f9; color:#334155; }
+.pill-cwcopy    { background:#fdf4ff; color:#7e22ce; }
+.pill-hwcopy    { background:#fff7ed; color:#9a3412; }
+.pill-incomplete{ background: var(--red-l); color: var(--red); }
+.pill-still     { background: var(--amber-l); color: var(--amber); }
+.pill-good      { background: var(--green-l); color: var(--green); }
+.pill-timely    { background: var(--blue-l); color: var(--blue); }
+.pill-practice  { background:#fef9c3; color:#854d0e; }
+.pill-notanswer { background:#fee2e2; color:#7f1d1d; }
+.av-absent      { background:#64748b; }
+.av-cwcopy      { background:#a21caf; }
+.av-hwcopy      { background:#c2410c; }
+.av-incomplete  { background: var(--red); }
+.av-still       { background: var(--amber); }
+.av-good        { background: var(--green); }
+.av-timely      { background: var(--blue); }
+.av-practice    { background:#ca8a04; }
+.av-notanswer   { background:#b91c1c; }
+.pill-ptm       { background:var(--purple-l); color:var(--purple); }
+.av-ptm         { background:var(--purple); }
+
+.divider { height: 1px; background: var(--border); margin: 4px 0 16px; }
+
+/* Profile modal */
+.modal-overlay { position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:200; display:none; align-items:flex-end; justify-content:center; }
+.modal-overlay.open { display:flex; }
+.modal-sheet { background:white; border-radius:24px 24px 0 0; padding:24px; width:100%; max-width:430px; }
+.modal-handle { width:40px; height:4px; background:var(--border); border-radius:4px; margin:0 auto 20px; }
+.modal-title { font-size:16px; font-weight:800; margin-bottom:16px; }
+
+/* ===== STUDENT RECORD ===== */
+.rec-profile-card {
+  background: linear-gradient(135deg,#4f46e5,#7c3aed);
+  border-radius: var(--radius); padding: 20px; margin-bottom: 14px;
+  color: white; position: relative; overflow: hidden;
+}
+.rec-profile-card::after { content:''; position:absolute; right:-30px; top:-30px; width:140px; height:140px; border-radius:50%; background:rgba(255,255,255,0.08); }
+.rec-avatar { width: 56px; height: 56px; border-radius: 50%; background: rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center; font-size: 26px; font-weight: 900; color: white; border: 2px solid rgba(255,255,255,0.4); margin-bottom: 12px; }
+.rec-name { font-size: 20px; font-weight: 900; }
+.rec-meta { font-size: 12px; opacity: 0.8; margin-top: 4px; }
+.rec-parent-row { display: flex; gap: 10px; margin-top: 14px; flex-wrap: wrap; }
+.rec-parent-chip { background: rgba(255,255,255,0.15); border-radius: 20px; padding: 6px 14px; font-size: 12px; font-weight: 700; display: flex; align-items: center; gap: 6px; }
+
+.stat-row { display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; margin-bottom: 14px; }
+.mini-stat { background: white; border-radius: var(--radius-sm); padding: 12px 8px; text-align: center; border: 1px solid var(--border); box-shadow: var(--shadow); }
+.mini-stat .ms-ico { font-size: 20px; margin-bottom: 4px; }
+.mini-stat .ms-val { font-size: 20px; font-weight: 900; color: var(--ink); line-height: 1; }
+.mini-stat .ms-lbl { font-size: 9px; font-weight: 700; color: var(--ink3); text-transform: uppercase; letter-spacing: 0.4px; margin-top: 3px; }
+
+.chart-card { background: white; border-radius: var(--radius); padding: 16px; margin-bottom: 14px; border: 1px solid var(--border); box-shadow: var(--shadow); }
+.chart-title { font-size: 13px; font-weight: 800; margin-bottom: 14px; color: var(--ink); }
+.bar-chart { display: flex; flex-direction: column; gap: 10px; }
+.bar-row { display: flex; align-items: center; gap: 10px; }
+.bar-label { font-size: 11px; font-weight: 700; color: var(--ink2); width: 110px; flex-shrink: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.bar-track { flex: 1; height: 22px; background: var(--bg); border-radius: 20px; overflow: hidden; position: relative; }
+.bar-fill { height: 100%; border-radius: 20px; display: flex; align-items: center; padding-left: 10px; font-size: 10px; font-weight: 800; color: white; min-width: 28px; transition: width 0.8s ease; }
+.bar-count { font-size: 11px; font-weight: 800; color: var(--ink3); width: 24px; text-align: right; flex-shrink: 0; }
+
+.donut-wrap { display: flex; align-items: center; gap: 20px; margin-bottom: 8px; }
+.donut-canvas { flex-shrink: 0; }
+.donut-legend { flex: 1; }
+.legend-item { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+.legend-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+.legend-txt { font-size: 11px; font-weight: 600; color: var(--ink2); }
+.legend-pct { font-size: 11px; font-weight: 800; color: var(--ink); margin-left: auto; }
+
+.trend-wrap { display: flex; align-items: flex-end; gap: 4px; height: 70px; margin-bottom: 6px; }
+.trend-bar-col { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px; }
+.trend-bar { width: 100%; border-radius: 4px 4px 0 0; min-height: 4px; transition: height .4s ease; }
+.trend-date { font-size: 8px; color: var(--ink4); font-weight: 600; text-align: center; }
+
+.insight-card { border-radius: var(--radius); padding: 16px; margin-bottom: 14px; border-left: 4px solid; }
+.insight-card .ins-title { font-size: 13px; font-weight: 800; margin-bottom: 10px; display: flex; align-items: center; gap: 6px; }
+.insight-item { display: flex; align-items: flex-start; gap: 8px; margin-bottom: 7px; }
+.insight-item .ins-dot { width: 6px; height: 6px; border-radius: 50%; margin-top: 6px; flex-shrink: 0; }
+.insight-item .ins-txt { font-size: 12.5px; color: var(--ink2); line-height: 1.6; }
+
+.growth-badge { display: inline-flex; align-items: center; gap: 4px; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 800; }
+
+.copy-rec-btn { width: 100%; padding: 15px; background: linear-gradient(135deg,#059669,#0d9488); color: white; border: none; border-radius: var(--radius-sm); font-size: 14px; font-weight: 800; cursor: pointer; margin-bottom: 10px; display: flex; align-items: center; justify-content: center; gap: 8px; }
+.wa-rec-btn { width: 100%; padding: 13px; background: #25D366; color: white; border: none; border-radius: var(--radius-sm); font-size: 14px; font-weight: 800; cursor: pointer; margin-bottom: 10px; display: flex; align-items: center; justify-content: center; gap: 8px; }
+.wa-rec-btn-2 { width: 100%; padding: 13px; background: #ec4899; color: white; border: none; border-radius: var(--radius-sm); font-size: 14px; font-weight: 800; cursor: pointer; margin-bottom: 10px; display: flex; align-items: center; justify-content: center; gap: 8px; }
+
+
+/* ===== CHAPTER TRACKER ===== */
+.chap-sec-tabs { display: grid; grid-template-columns: repeat(4,1fr); gap: 8px; margin-bottom: 14px; }
+.chap-sec-btn { padding: 10px 4px; border: 2px solid var(--border); border-radius: var(--radius-sm); font-size: 12px; font-weight: 800; background: white; cursor: pointer; color: var(--ink3); text-align: center; transition: all .15s; }
+.chap-sec-btn.on { background: linear-gradient(135deg,#4f46e5,#7c3aed); color: white; border-color: transparent; }
+
+.chap-setup-card { background: white; border-radius: var(--radius); padding: 16px; margin-bottom: 14px; border: 1px solid var(--border); box-shadow: var(--shadow); }
+.chap-list-item { display: flex; align-items: center; gap: 8px; padding: 8px 0; border-bottom: 1px solid var(--border); }
+.chap-list-item:last-child { border-bottom: none; }
+.chap-num-badge { width: 28px; height: 28px; border-radius: 8px; background: var(--primary-l); color: var(--primary); font-size: 11px; font-weight: 800; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.chap-name-inp { flex: 1; border: 1.5px solid var(--border); border-radius: 8px; padding: 8px 10px; font-size: 13px; font-family: 'Inter', sans-serif; outline: none; }
+.chap-name-inp:focus { border-color: var(--primary); }
+.chap-del-btn { width: 30px; height: 30px; border: 1px solid #fca5a5; border-radius: 8px; background: #fff5f5; cursor: pointer; color: var(--red); font-size: 14px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+
+/* Chapter Grid Table */
+.chap-table-wrap { overflow-x: auto; scrollbar-width: thin; margin-bottom: 14px; }
+.chap-table { border-collapse: separate; border-spacing: 0; width: 100%; min-width: 340px; background: white; border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden; border: 1px solid var(--border); }
+.chap-table th { background: linear-gradient(135deg,#4f46e5,#7c3aed); color: white; font-size: 10px; font-weight: 800; padding: 10px 8px; text-align: center; white-space: nowrap; position: sticky; top: 0; }
+.chap-table th.st-col { text-align: left; min-width: 110px; position: sticky; left: 0; background: linear-gradient(135deg,#4f46e5,#7c3aed); z-index: 2; }
+.chap-table td { padding: 8px 6px; text-align: center; border-bottom: 1px solid var(--border); font-size: 12px; vertical-align: middle; }
+.chap-table td.st-col { text-align: left; font-size: 12px; font-weight: 700; color: var(--ink); padding-left: 10px; position: sticky; left: 0; background: white; z-index: 1; border-right: 1px solid var(--border); white-space: nowrap; }
+.chap-table tr:hover td { background: #f8fafc; }
+.chap-table tr:hover td.st-col { background: #f1f5f9; }
+.chap-table tr:last-child td { border-bottom: none; }
+
+/* Tick symbols */
+.tick-cell { cursor: pointer; user-select: none; width: 32px; }
+.tick-btn { width: 28px; height: 28px; border-radius: 8px; border: 2px dashed #cbd5e1; background: #f8fafc; display: flex; align-items: center; justify-content: center; margin: 0 auto; font-size: 16px; transition: all .15s; cursor: pointer; }
+.tick-btn:active { transform: scale(0.9); }
+.tick-green  { border: 2px solid #059669; background: #d1fae5; }
+.tick-lgreen { border: 2px solid #34d399; background: #ecfdf5; }
+.tick-blue   { border: 2px solid #0284c7; background: #e0f2fe; }
+.tick-red    { border: 2px solid #dc2626; background: #fee2e2; }
+.tick-cross  { border: 2px solid #f87171; background: #fff5f5; }
+
+/* Chapter header in table - CW/HW sub columns */
+.chap-col-header { font-size: 9px; font-weight: 800; }
+.sub-head { display: flex; }
+.sub-th { flex: 1; font-size: 9px; font-weight: 800; color: rgba(255,255,255,0.85); }
+
+/* Legend */
+.tick-legend { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
+.tl-item { display: flex; align-items: center; gap: 5px; font-size: 11px; font-weight: 600; color: var(--ink2); }
+
+/* Chapter tab switcher */
+.chap-view-tabs { display: flex; gap: 8px; margin-bottom: 14px; }
+.cv-tab { flex: 1; padding: 10px 4px; border: 1.5px solid var(--border); border-radius: var(--radius-sm); font-size: 12px; font-weight: 700; background: white; cursor: pointer; color: var(--ink3); text-align: center; transition: all .15s; }
+.cv-tab.on { background: var(--primary); color: white; border-color: var(--primary); }
+
+</style>
+
+<style id="tdp-watermark-css">
+/* ===== WATERMARK FOOTER — Auto-injected ===== */
+#tdp-fixed-credit {
+  position: fixed; bottom: 0; left: 0; right: 0;
+  background: linear-gradient(135deg, #0f172a, #1e293b);
+  border-top: 1px solid #334155;
+  padding: 4px 12px; z-index: 9990;
+  display: flex; align-items: center; justify-content: space-between;
+  font-family: -apple-system, sans-serif;
+}
+#tdp-fixed-credit .wm-left {
+  font-size: 10px; color: #64748b; font-weight: 700;
+}
+#tdp-fixed-credit .wm-right {
+  font-size: 10px; color: #dc2626; font-weight: 800; letter-spacing: 0.3px;
+}
+/* Push bottom nav up to avoid watermark overlap */
+.bottom-nav { padding-bottom: 6px !important; }
+</style>
+</head>
+<body>
+
+<!-- SPLASH -->
+<div id="splash">
+  <div class="splash-icon">📊</div>
+  <div class="splash-title">AOM HW Track</div>
+  <div class="splash-sub">Art of Manish — Student Homework Monitor</div>
+  
+    <div style="font-size:12px;color:rgba(255,255,255,0.6);margin-top:8px;font-weight:600;letter-spacing:0.3px">
+      🎓 manish sharma &nbsp;|&nbsp; 📱 9460445196
+    </div>
+<div class="splash-loader"></div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- PROFILE MODAL -->
+<div class="modal-overlay" id="profile-modal" onclick="closeProfile(event)">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-title">👤 Teacher Profile</div>
+    <div class="field"><label>Your Name</label><input type="text" id="teacher-name-inp" placeholder="e.g. Mrs. Sharma" onchange="saveProfile()"></div>
+    <div class="field"><label>School Name</label><input type="text" id="school-name-inp" placeholder="e.g. Delhi Public School" onchange="saveProfile()"></div>
+    <div class="field"><label>Class / Subject</label><input type="text" id="class-subj-inp" placeholder="e.g. Class 8 — Mathematics" onchange="saveProfile()"></div>
+    <button class="save-btn" onclick="saveProfileClose()">✅ Save Profile</button>
+  </div>
+</div>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-inner">
+    <div class="header-avatar" onclick="openProfile()" style="cursor:pointer">👩‍🏫</div>
+    <div class="header-info">
+      <div class="header-greeting">Good <span id="greeting-time">morning</span>, Teacher! 👋</div>
+      <div style="display:flex;align-items:baseline;gap:6px;flex-wrap:wrap">
+        <div class="header-name" id="display-name">AOM HW Track</div>
+        <div style="font-size:10px;color:rgba(255,255,255,0.5);font-weight:600">Art of Manish</div>
+      </div>
+      <div id="header-client-info" style="font-size:11px;color:rgba(255,255,255,0.7);font-weight:700;margin-top:1px;display:none"></div>
+      <div class="header-date" id="display-date"></div>
+    </div>
+    <div class="header-notify" id="notify-bell">🔔<div class="notify-dot"></div></div>
+  </div>
+  <div class="tab-bar">
+    <button class="tab active" onclick="showTab('dash')" id="tab-dash">🏠 Home</button>
+    <button class="tab" onclick="showTab('entry')" id="tab-entry">✏️ Entry</button>
+    <button class="tab" onclick="showTab('history')" id="tab-history">📋 History</button>
+    <button class="tab" onclick="showTab('students')" id="tab-students">👥 Students</button>
+    <button class="tab" onclick="showTab('tips')" id="tab-tips">💡 Tips</button>
+    <button class="tab" onclick="showTab('record')" id="tab-record">📊 Record</button>
+    <button class="tab" onclick="showTab('chapter')" id="tab-chapter">📚 Chapters</button>
+  </div>
+</div>
+
+<!-- ============ DASHBOARD ============ -->
+<div class="view active" id="view-dash">
+  <div class="dash-stats" id="dash-stats">
+    <div class="stat-card c1"><div class="stat-icon">👥</div><div class="stat-val" id="s-total">0</div><div class="stat-label">Total Students</div></div>
+    <div class="stat-card c2"><div class="stat-icon">✅</div><div class="stat-val" id="s-today">0</div><div class="stat-label">Entries Today</div></div>
+    <div class="stat-card c3"><div class="stat-icon">📊</div><div class="stat-val" id="s-week">0</div><div class="stat-label">This Week</div></div>
+    <div class="stat-card c4"><div class="stat-icon">⚠️</div><div class="stat-val" id="s-issues">0</div><div class="stat-label">Incomplete</div></div>
+  </div>
+
+  <div class="section-head"><span>⚡</span> Quick Actions</div>
+  <div class="quick-grid">
+    <div class="quick-btn" onclick="showTab('entry')"><span class="q-icon">📝</span><span class="q-label">New Entry</span></div>
+    <div class="quick-btn" onclick="showTab('students')"><span class="q-icon">👤</span><span class="q-label">Students</span></div>
+    <div class="quick-btn" onclick="showTab('history')"><span class="q-icon">📋</span><span class="q-label">History</span></div>
+    <div class="quick-btn" onclick="showTab('tips')"><span class="q-icon">💡</span><span class="q-label">Get Tips</span></div>
+  </div>
+
+  <div class="section-head"><span>🎯</span> Teacher Tips — Swipe</div>
+  <div class="tips-scroll">
+    <div class="tip-card tc1"><div class="tip-tag">📌 Homework</div><div class="tip-title">Track Patterns, Not Just Incidents</div><div class="tip-body">Record homework status daily. After 2 weeks you'll see patterns — which students struggle consistently vs occasionally.</div><div class="tip-img">📊</div></div>
+    <div class="tip-card tc2"><div class="tip-tag">💬 Parents</div><div class="tip-title">WhatsApp First, Call Second</div><div class="tip-body">Send written remarks before calling. Parents digest written info better and feel less defensive when confronted later.</div><div class="tip-img">📱</div></div>
+    <div class="tip-card tc3"><div class="tip-tag">⚡ Classroom</div><div class="tip-title">The 5-Minute Rule</div><div class="tip-body">Check homework in the first 5 minutes. Students who know you check daily will complete 80% more consistently.</div><div class="tip-img">⏰</div></div>
+    <div class="tip-card tc4"><div class="tip-tag">🧠 Psychology</div><div class="tip-title">Praise Publicly, Correct Privately</div><div class="tip-body">Announce top performers in class. Send incomplete remarks privately to parents. This preserves student dignity.</div><div class="tip-img">🏆</div></div>
+    <div class="tip-card tc5"><div class="tip-tag">📈 Progress</div><div class="tip-title">Monthly Review Meetings</div><div class="tip-body">Share homework completion data with parents monthly. Data-driven conversations are far more effective than complaints.</div><div class="tip-img">📅</div></div>
+  </div>
+
+  <div class="section-head"><span>🔴</span> Common Problems & Solutions</div>
+  <div class="prob-card" style="border-color:#dc2626" onclick="toggleProb(this)">
+    <div class="pc-head"><span class="pc-icon">😤</span><div><div class="pc-title">Students Never Do Homework</div><div class="pc-sub">The #1 classroom problem</div></div></div>
+    <div class="pc-body">Regular WhatsApp remarks to parents with daily tracking creates accountability. Parents who see written proof act faster than verbal complaints.</div>
+    <div class="pc-solution">✅ Use daily entry + WhatsApp forward feature</div>
+  </div>
+  <div class="prob-card" style="border-color:#d97706" onclick="toggleProb(this)">
+    <div class="pc-head"><span class="pc-icon">📞</span><div><div class="pc-title">Parents Don't Respond to Calls</div><div class="pc-sub">Communication breakdown</div></div></div>
+    <div class="pc-body">WhatsApp messages have 95% open rate vs 35% for calls. Send formal, respectful remarks — parents respond better to written, documented communication.</div>
+    <div class="pc-solution">✅ Use WhatsApp direct forward from History tab</div>
+  </div>
+  <div class="prob-card" style="border-color:#0284c7" onclick="toggleProb(this)">
+    <div class="pc-head"><span class="pc-icon">📝</span><div><div class="pc-title">Forgetting Which Student Did What</div><div class="pc-sub">Record-keeping challenge</div></div></div>
+    <div class="pc-body">With 60+ students per section, memory fails. Digital records with searchable history and section-wise filters solve this completely.</div>
+    <div class="pc-solution">✅ Check History tab — filter by section/status</div>
+  </div>
+  <div class="prob-card" style="border-color:#7c3aed" onclick="toggleProb(this)">
+    <div class="pc-head"><span class="pc-icon">😓</span><div><div class="pc-title">Writing Same Remarks Daily is Tiring</div><div class="pc-sub">Repetitive paperwork fatigue</div></div></div>
+    <div class="pc-body">One-tap status selection auto-generates personalized bilingual remarks with student's name. Save 20+ minutes daily compared to handwritten diary remarks.</div>
+    <div class="pc-solution">✅ One tap = full remark in English + Hindi</div>
+  </div>
+</div>
+
+<!-- ============ ENTRY ============ -->
+<div class="view" id="view-entry">
+  <div class="card">
+    <div class="card-title">🏫 Select Student</div>
+    <div class="field"><label>📚 Your Classes with Section</label>
+      <select id="sel-section" onchange="loadRolls()">
+        <option value="">— Select Class / Section —</option>
+      </select>
+    </div>
+    <div class="field"><label>Roll Number</label>
+      <select id="sel-roll" onchange="fillStudent()">
+        <option value="">— Select Roll No —</option>
+      </select>
+    </div>
+    <div id="student-display" style="display:none"></div>
+    <div class="field"><label>Date</label><input type="date" id="inp-date"></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">📝 Homework Status</div>
+    <div class="status-grid">
+      <button class="s-btn" id="opt-absent"     onclick="selectStatus('absent')">
+        <span class="s-ico">🏠</span><span class="s-lbl">Student Absent</span>
+      </button>
+      <button class="s-btn" id="opt-cwcopy"     onclick="selectStatus('cwcopy')">
+        <span class="s-ico">📓</span><span class="s-lbl">CW Copy Not Brought</span>
+      </button>
+      <button class="s-btn" id="opt-hwcopy"     onclick="selectStatus('hwcopy')">
+        <span class="s-ico">📒</span><span class="s-lbl">HW Copy Not Brought</span>
+      </button>
+      <button class="s-btn" id="opt-incomplete" onclick="selectStatus('incomplete')">
+        <span class="s-ico">❌</span><span class="s-lbl">Incomplete Work</span>
+      </button>
+      <button class="s-btn" id="opt-still"      onclick="selectStatus('still')">
+        <span class="s-ico">⚠️</span><span class="s-lbl">Still Incomplete</span>
+      </button>
+      <button class="s-btn" id="opt-good"       onclick="selectStatus('good')">
+        <span class="s-ico">👍</span><span class="s-lbl">Good Work</span>
+      </button>
+      <button class="s-btn" id="opt-timely"     onclick="selectStatus('timely')">
+        <span class="s-ico">⭐</span><span class="s-lbl">Timely Work Complete</span>
+      </button>
+      <button class="s-btn" id="opt-practice"   onclick="selectStatus('practice')">
+        <span class="s-ico">📝</span><span class="s-lbl">Need More Practice</span>
+      </button>
+      <button class="s-btn" id="opt-notanswer"  onclick="selectStatus('notanswer')">
+        <span class="s-ico">🤐</span><span class="s-lbl">Not Answering in Class</span>
+      </button>
+      <button class="s-btn" id="opt-ptm" onclick="selectStatus('ptm')" style="grid-column:1/-1">
+        <span class="s-ico">🤝</span><span class="s-lbl">PTM Required — Meet in School</span>
+      </button>
+    </div>
+  </div>
+
+  <div id="remark-section" style="display:none">
+    <div class="card">
+      <div class="card-title">💬 Remark — English & Hindi</div>
+      <div class="remark-wrap" id="remark-box">
+        <div class="remark-section-title">🇬🇧 English Remark</div>
+        <div class="remark-text" id="r-eng"></div>
+        <div class="remark-divider"></div>
+        <div class="remark-section-title">🇮🇳 Hindi Remark</div>
+        <div class="remark-hin" id="r-hin"></div>
+      </div>
+      <div class="action-row">
+        <button class="act-btn act-copy" onclick="copyRemark()"><span class="ab-ico">📋</span>Copy Both</button>
+        <button class="act-btn act-wa-f" onclick="sendWA('father')"><span class="ab-ico">👨📱</span>Father WA</button>
+        <button class="act-btn act-wa-m" onclick="sendWA('mother')"><span class="ab-ico">👩📱</span>Mother WA</button>
+      </div>
+    </div>
+    <div class="card">
+      <button class="save-btn" onclick="saveEntry()">💾 Save Record</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ HISTORY ============ -->
+<div class="view" id="view-history">
+  <div class="search-bar">
+    <input class="search-inp" type="text" id="search-inp" placeholder="🔍 Search by name..." oninput="renderHistory()">
+  </div>
+  <!-- History filters: class chips rendered dynamically + status chips -->
+  <div class="filter-scroll" id="hist-filters"></div>
+  <div id="history-list"></div>
+
+  <!-- History Export Buttons -->
+  <div style="margin-top:16px;padding:16px;background:white;border-radius:16px;border:1px solid #e2e8f0;box-shadow:0 1px 3px rgba(0,0,0,0.08)">
+    <div style="font-size:12px;font-weight:800;color:#334155;margin-bottom:12px;display:flex;align-items:center;gap:6px">📤 Export Current View</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px">
+      <button onclick="exportHistoryText()" style="padding:12px 6px;background:#f1f5f9;border:1.5px solid #cbd5e1;border-radius:10px;font-size:11px;font-weight:700;cursor:pointer;color:#334155;display:flex;flex-direction:column;align-items:center;gap:4px">
+        <span style="font-size:20px">📋</span>Copy Text
+      </button>
+      <button onclick="exportHistoryCSV()" style="padding:12px 6px;background:#f0fdf4;border:1.5px solid #86efac;border-radius:10px;font-size:11px;font-weight:700;cursor:pointer;color:#15803d;display:flex;flex-direction:column;align-items:center;gap:4px">
+        <span style="font-size:20px">📊</span>Excel / CSV
+      </button>
+      <button onclick="exportHistoryHTML()" style="padding:12px 6px;background:#eff6ff;border:1.5px solid #93c5fd;border-radius:10px;font-size:11px;font-weight:700;cursor:pointer;color:#1d4ed8;display:flex;flex-direction:column;align-items:center;gap:4px">
+        <span style="font-size:20px">📄</span>Word / PDF
+      </button>
+    </div>
+    <div style="font-size:10px;color:#94a3b8;margin-top:8px;text-align:center">CSV = Excel me open karo | HTML = Browser me print karo → PDF/Word save karo</div>
+  </div>
+
+</div>
+
+<!-- ============ STUDENTS ============ -->
+<div class="view" id="view-students">
+  <div class="card" style="margin-bottom:12px">
+    <div style="font-size:13px;color:var(--ink2);line-height:1.7">
+      📌 <strong>Add all students once</strong> with roll number, name, father & mother mobile numbers. Then every entry auto-fills their details. Save section-wise.
+    </div>
+    <button onclick="openClassManager()" style="margin-top:12px;width:100%;padding:11px;background:linear-gradient(135deg,#4f46e5,#7c3aed);color:white;border:none;border-radius:10px;font-size:13px;font-weight:800;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px">
+      🏫 Manage My Classes & Sections
+    </button>
+  </div>
+
+  <!-- Section tabs — dynamically rendered -->
+  <div style="font-size:11px;font-weight:800;color:var(--ink3);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px;display:flex;align-items:center;gap:6px">📚 Your Classes with Section</div>
+  <div class="sec-tabs" id="sec-tabs" style="grid-template-columns:repeat(5,1fr)"></div>
+
+  <div id="student-list"></div>
+  <button class="add-student-btn" onclick="addStudent()">➕ Add Student to <span id="cur-sec-label">Class</span></button>
+  <div class="card">
+    <button class="save-btn" onclick="saveStudents()">✅ Save <span id="save-sec-label">Class</span></button>
+  </div>
+</div>
+
+<!-- CLASS MANAGER MODAL -->
+<div class="modal-overlay" id="class-manager-modal" onclick="closeClassManager(event)">
+  <div class="modal-sheet" style="max-height:85vh;overflow-y:auto">
+    <div class="modal-handle"></div>
+    <div class="modal-title">🏫 My Classes & Sections</div>
+    <div style="font-size:12px;color:var(--ink3);margin-bottom:16px;line-height:1.6">Add up to 10 classes. Each can have a custom name + subject (optional). Students will be added class-wise.</div>
+    <div id="class-manager-list"></div>
+    <button onclick="addClassEntry()" style="width:100%;padding:12px;background:#eef2ff;color:var(--primary);border:1.5px dashed var(--primary);border-radius:10px;font-size:13px;font-weight:800;cursor:pointer;margin-bottom:12px">➕ Add Another Class</button>
+    <button class="save-btn" onclick="saveClasses()">✅ Save All Classes</button>
+  </div>
+</div>
+
+<!-- ============ TIPS ============ -->
+<div class="view" id="view-tips">
+  <div class="card" style="background:linear-gradient(135deg,#4f46e5,#7c3aed);color:white;border:none">
+    <div style="font-size:26px;margin-bottom:8px">💡</div>
+    <div style="font-size:16px;font-weight:900;margin-bottom:6px">Expert Suggestions</div>
+    <div style="font-size:13px;opacity:0.85;line-height:1.6">25 years of teaching experience distilled into actionable tips for every challenge you face daily.</div>
+  </div>
+
+  <div class="sug-category">
+    <div class="sug-cat-title">📚 Homework Management</div>
+
+    <div class="sug-card" style="border-color:#4f46e5">
+      <div class="sg-head"><span class="sg-icon">📊</span><div><div class="sg-title">Build a Homework Accountability System</div><div class="sg-prob">Problem: Students skip homework repeatedly</div></div></div>
+      <div class="sg-body">Inconsistency kills accountability. When students see no consequence, they keep skipping. A visible system changes behavior within 2 weeks.</div>
+      <div class="sg-steps">
+        <div class="sg-step"><div class="step-num">1</div><div class="step-txt">Record every student's status every single day — no exceptions</div></div>
+        <div class="sg-step"><div class="step-num">2</div><div class="step-txt">Send WhatsApp remark same day, not next week</div></div>
+        <div class="sg-step"><div class="step-num">3</div><div class="step-txt">After 3 consecutive incompletes, escalate to "Still Incomplete" status</div></div>
+        <div class="sg-step"><div class="step-num">4</div><div class="step-txt">Show parents the history record — data is more convincing than words</div></div>
+      </div>
+      <div class="sg-quote">"A student who knows you track and report will complete work 3x more often than one who thinks you'll forget." — Classroom experience</div>
+    </div>
+
+    <div class="sug-card" style="border-color:#059669">
+      <div class="sg-head"><span class="sg-icon">⭐</span><div><div class="sg-title">Reward Publicly, Correct Privately</div><div class="sg-prob">Problem: Shaming students creates resistance</div></div></div>
+      <div class="sg-body">Public embarrassment creates rebels, not learners. Private correction with parental involvement creates lasting behavioral change.</div>
+      <div class="sg-steps">
+        <div class="sg-step"><div class="step-num">1</div><div class="step-txt">Read "Timely Complete" students' names aloud — create social motivation</div></div>
+        <div class="sg-step"><div class="step-num">2</div><div class="step-txt">Never announce who didn't do homework in front of class</div></div>
+        <div class="sg-step"><div class="step-num">3</div><div class="step-txt">Send WhatsApp to parents privately with kind but firm language</div></div>
+      </div>
+      <div class="sg-quote">"Praise in public, correct in private. The student who is praised becomes motivated; the one corrected privately feels respected enough to improve."</div>
+    </div>
+  </div>
+
+  <div class="sug-category">
+    <div class="sug-cat-title">📱 Parent Communication</div>
+
+    <div class="sug-card" style="border-color:#d97706">
+      <div class="sg-head"><span class="sg-icon">💬</span><div><div class="sg-title">WhatsApp Over Phone Calls</div><div class="sg-prob">Problem: Parents don't answer/return calls</div></div></div>
+      <div class="sg-body">WhatsApp messages have a 95% open rate. Written remarks create documentation. Parents feel less cornered and more informed when they have time to read.</div>
+      <div class="sg-steps">
+        <div class="sg-step"><div class="step-num">1</div><div class="step-txt">Always send written WhatsApp remark first</div></div>
+        <div class="sg-step"><div class="step-num">2</div><div class="step-txt">Save both father AND mother numbers — message whichever responds</div></div>
+        <div class="sg-step"><div class="step-num">3</div><div class="step-txt">Keep tone warm but factual — never emotional or accusatory</div></div>
+        <div class="sg-step"><div class="step-num">4</div><div class="step-txt">Call only after 3 ignored WhatsApp messages</div></div>
+      </div>
+      <div class="sg-quote">"A written remark is evidence. A verbal complaint is just a memory. Always document, always message first."</div>
+    </div>
+
+    <div class="sug-card" style="border-color:#db2777">
+      <div class="sg-head"><span class="sg-icon">🤝</span><div><div class="sg-title">Make Parents Your Allies, Not Opponents</div><div class="sg-prob">Problem: Parents defend their children blindly</div></div></div>
+      <div class="sg-body">Parents defend instinctively. Your job is to reframe: you're on the same team. The remark language in this app is designed to be supportive, not accusatory.</div>
+      <div class="sg-steps">
+        <div class="sg-step"><div class="step-num">1</div><div class="step-txt">Start every remark with a warm greeting — never with the problem</div></div>
+        <div class="sg-step"><div class="step-num">2</div><div class="step-txt">Mention what you're doing to help, then mention the problem</div></div>
+        <div class="sg-step"><div class="step-num">3</div><div class="step-txt">End with "we believe in your child" — motivate, don't demotivate</div></div>
+      </div>
+      <div class="sg-quote">"When parents feel you care about their child's success, they become your strongest allies — not your critics."</div>
+    </div>
+  </div>
+
+  <div class="sug-category">
+    <div class="sug-cat-title">🧠 Classroom Psychology</div>
+
+    <div class="sug-card" style="border-color:#7c3aed">
+      <div class="sg-head"><span class="sg-icon">🧠</span><div><div class="sg-title">The First 5-Minute Rule</div><div class="sg-prob">Problem: Students don't take homework seriously</div></div></div>
+      <div class="sg-body">When you check homework in the first 5 minutes consistently, students treat it as non-negotiable. Missing this check — even once — breaks the habit.</div>
+      <div class="sg-steps">
+        <div class="sg-step"><div class="step-num">1</div><div class="step-txt">Enter class, greet students, then immediately ask for homework books</div></div>
+        <div class="sg-step"><div class="step-num">2</div><div class="step-txt">Never say "I'll check tomorrow" — credibility is everything</div></div>
+        <div class="sg-step"><div class="step-num">3</div><div class="step-txt">Record status on this app while students work on something else</div></div>
+        <div class="sg-step"><div class="step-num">4</div><div class="step-txt">Send WhatsApp remarks by lunch break, not end of day</div></div>
+      </div>
+      <div class="sg-quote">"Students do not rise to the level of your expectations. They fall to the level of your systems. Build the system, and students will follow."</div>
+    </div>
+
+    <div class="sug-card" style="border-color:#0284c7">
+      <div class="sg-head"><span class="sg-icon">📈</span><div><div class="sg-title">Track Trends, Not Just Today</div><div class="sg-prob">Problem: Can't remember who is a habitual defaulter</div></div></div>
+      <div class="sg-body">A student missing homework once needs encouragement. Missing it 5 times in a row needs intervention. Your History tab lets you spot these patterns instantly.</div>
+      <div class="sg-steps">
+        <div class="sg-step"><div class="step-num">1</div><div class="step-txt">Filter History by student name to see their pattern</div></div>
+        <div class="sg-step"><div class="step-num">2</div><div class="step-txt">Show the history record during parent meetings — undeniable evidence</div></div>
+        <div class="sg-step"><div class="step-num">3</div><div class="step-txt">Celebrate when a formerly struggling student improves — acknowledge growth</div></div>
+      </div>
+      <div class="sg-quote">"Data doesn't lie. When a parent says 'my child always does homework', you can show the last 30 days. Facts end arguments."</div>
+    </div>
+  </div>
+
+  <div class="sug-category">
+    <div class="sug-cat-title">⏰ Time Management for Teachers</div>
+    <div class="sug-card" style="border-color:#059669">
+      <div class="sg-head"><span class="sg-icon">⚡</span><div><div class="sg-title">Save 20 Minutes Every Day</div><div class="sg-prob">Problem: Writing diary/remark entries is exhausting</div></div></div>
+      <div class="sg-body">Traditional homework diaries, writing remarks for 240 students manually, making individual calls — this app eliminates all of that.</div>
+      <div class="sg-steps">
+        <div class="sg-step"><div class="step-num">1</div><div class="step-txt">Set up all 240 students once — takes 30 minutes total</div></div>
+        <div class="sg-step"><div class="step-num">2</div><div class="step-txt">Daily entry: select roll → tap status → remark ready in 5 seconds</div></div>
+        <div class="sg-step"><div class="step-num">3</div><div class="step-txt">WhatsApp forward: one tap sends professional bilingual remark to parent</div></div>
+        <div class="sg-step"><div class="step-num">4</div><div class="step-txt">History is always there — no diary to maintain, no papers to file</div></div>
+      </div>
+      <div class="sg-quote">"The best system is the one you'll actually use every day. Simple, fast, mobile-first — that's how habits are built."</div>
+    </div>
+  </div>
+</div>
+
+<!-- BOTTOM NAV -->
+
+<!-- ============ STUDENT RECORD VIEW ============ -->
+<div class="view" id="view-record">
+
+  <!-- Search Card -->
+  <div class="card">
+    <div class="card-title">🔍 Find Student Record</div>
+    <div class="field">
+      <label>Section</label>
+      <select id="rec-section" onchange="loadRecordRolls()">
+        <option value="">— Select Class / Section —</option>
+      </select>
+    </div>
+    <div class="field">
+      <label>Roll Number</label>
+      <select id="rec-roll" onchange="loadStudentRecord()">
+        <option value="">— Select Roll No —</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Record Output -->
+  <div id="rec-output"></div>
+
+</div>
+
+<!-- ============ CHAPTER TRACKER VIEW ============ -->
+<div class="view" id="view-chapter">
+
+  <!-- Sub tabs: Grid view vs Setup -->
+  <div class="chap-view-tabs">
+    <button class="cv-tab on" id="cvt-grid" onclick="switchChapView('grid')">📊 Chapter Grid</button>
+    <button class="cv-tab" id="cvt-setup" onclick="switchChapView('setup')">⚙️ Setup Chapters</button>
+  </div>
+
+  <!-- SETUP VIEW -->
+  <div id="chap-setup-view">
+    <div class="chap-setup-card">
+      <div class="card-title">🏫 Select Your Class</div>
+      <div class="chap-sec-tabs" id="chap-sec-tabs-setup"></div>
+    </div>
+
+    <div class="chap-setup-card">
+      <div class="card-title">📚 Chapters (shared across all sections)</div>
+      <div id="chap-list-setup"></div>
+      <button class="add-student-btn" onclick="addChapter()" style="margin-top:8px">➕ Add Chapter</button>
+      <button class="save-btn" onclick="saveChapters()" style="margin-top:10px">✅ Save Chapters</button>
+    </div>
+  </div>
+
+  <!-- GRID VIEW -->
+  <div id="chap-grid-view" style="display:none">
+    <div class="chap-setup-card">
+      <div class="card-title">🏫 Select Your Class</div>
+      <div class="chap-sec-tabs" id="chap-sec-tabs-grid"></div>
+    </div>
+
+    <!-- Legend -->
+    <div class="chap-setup-card">
+      <div class="card-title">🎨 Tick Legend</div>
+      <div class="tick-legend">
+        <div class="tl-item"><div class="tick-btn tick-green" style="width:22px;height:22px;font-size:12px">✅</div> Timely (Green)</div>
+        <div class="tl-item"><div class="tick-btn tick-lgreen" style="width:22px;height:22px;font-size:12px">✔️</div> 1 Late (Light Green)</div>
+        <div class="tl-item"><div class="tick-btn tick-blue" style="width:22px;height:22px;font-size:12px">✔️</div> 2 Late (Blue)</div>
+        <div class="tl-item"><div class="tick-btn tick-red" style="width:22px;height:22px;font-size:12px">✔️</div> 3-4 Late (Red)</div>
+        <div class="tl-item"><div class="tick-btn tick-cross" style="width:22px;height:22px;font-size:12px">❌</div> Not Done</div>
+        <div class="tl-item"><div class="tick-btn" style="width:22px;height:22px;font-size:12px"></div> Not Checked</div>
+      </div>
+    </div>
+
+    <div id="chap-grid-wrap"></div>
+
+    <!-- Chapter Export Buttons -->
+    <div style="margin-top:8px;padding:16px;background:white;border-radius:16px;border:1px solid #e2e8f0;box-shadow:0 1px 3px rgba(0,0,0,0.08)">
+      <div style="font-size:12px;font-weight:800;color:#334155;margin-bottom:12px;display:flex;align-items:center;gap:6px">📤 Export Chapter Records</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+        <button onclick="exportChapterCSV()" style="padding:13px 8px;background:#f0fdf4;border:1.5px solid #86efac;border-radius:10px;font-size:12px;font-weight:700;cursor:pointer;color:#15803d;display:flex;flex-direction:column;align-items:center;gap:4px">
+          <span style="font-size:20px">📊</span>Excel / CSV
+        </button>
+        <button onclick="exportChapterHTML()" style="padding:13px 8px;background:#eff6ff;border:1.5px solid #93c5fd;border-radius:10px;font-size:12px;font-weight:700;cursor:pointer;color:#1d4ed8;display:flex;flex-direction:column;align-items:center;gap:4px">
+          <span style="font-size:20px">📄</span>Word / PDF
+        </button>
+      </div>
+      <div style="font-size:10px;color:#94a3b8;margin-top:8px;text-align:center">CSV = Excel me open karo | HTML = Browser me print karo → PDF/Word save karo</div>
+    </div>
+  </div>
+
+</div>
+
+<div class="bottom-nav">
+  <div class="nav-item on" onclick="showTab('dash')" id="nav-dash"><div class="nav-ico">🏠</div><div class="nav-lbl">Home</div></div>
+  <div class="nav-item" onclick="showTab('entry')" id="nav-entry"><div class="nav-ico">✏️</div><div class="nav-lbl">Entry</div></div>
+  <div class="nav-item" onclick="showTab('history')" id="nav-history"><div class="nav-ico">📋</div><div class="nav-lbl">History</div></div>
+  <div class="nav-item" onclick="showTab('students')" id="nav-students"><div class="nav-ico">👥</div><div class="nav-lbl">Students</div></div>
+  <div class="nav-item" onclick="showTab('tips')" id="nav-tips"><div class="nav-ico">💡</div><div class="nav-lbl">Tips</div></div>
+  <div class="nav-item" onclick="showTab('record')" id="nav-record"><div class="nav-ico">📊</div><div class="nav-lbl">Record</div></div>
+  <div class="nav-item" onclick="showTab('chapter')" id="nav-chapter"><div class="nav-ico">📚</div><div class="nav-lbl">Chapters</div></div>
+</div>
+
+<script>
+
+// ╔══════════════════════════════════════════════════════════════╗
+// ║           TeacherDesk Pro — License & Protection            ║
+// ║     © 2024 TeacherDesk Pro. All Rights Reserved.           ║
+// ║     Unauthorized copying or redistribution is illegal.      ║
+// ╚══════════════════════════════════════════════════════════════╝
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+//  OWNER FILL THESE 4 LINES ONLY — PER BUYER
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+const LICENSE = {
+  buyerName   : `manish sharma`,        // e.g. Mrs. Nisha Sharma
+  phone       : `9460445196`,       // e.g. 9460085002  (10 digits, no +91)
+  school      : `anthony school`,      // e.g. MDS School, Udaipur
+  expiryDate  : `2027-03-31`,       // e.g. 2026-06-30  (YYYY-MM-DD format)
+  licenseKey  : `TDP-5196-2027`,       // e.g. TDP-5002-2026 (you generate this)
+};
+// Auto-clean: trims accidental spaces/newlines so copy-paste mistakes don't break the key check
+Object.keys(LICENSE).forEach(k => { if (typeof LICENSE[k] === 'string') LICENSE[k] = LICENSE[k].trim(); });
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+(function protectApp() {
+  // ── 1. Tamper / DevTools detection ──────────────────────────
+  let devOpen = false;
+  const threshold = 160;
+  setInterval(() => {
+    if (
+      window.outerWidth - window.innerWidth > threshold ||
+      window.outerHeight - window.innerHeight > threshold
+    ) {
+      if (!devOpen) {
+        devOpen = true;
+        showTamperScreen();
+      }
+    } else { devOpen = false; }
+  }, 1000);
+
+  // Disable right-click context menu
+  document.addEventListener('contextmenu', e => e.preventDefault());
+  // Disable F12, Ctrl+Shift+I, Ctrl+U, Ctrl+S
+  document.addEventListener('keydown', e => {
+    if (
+      e.key === 'F12' ||
+      (e.ctrlKey && e.shiftKey && ['I','J','C'].includes(e.key.toUpperCase())) ||
+      (e.ctrlKey && ['U','S','P'].includes(e.key.toUpperCase()))
+    ) { e.preventDefault(); }
+  });
+
+  // ── 2. Expiry Check ─────────────────────────────────────────
+  function checkExpiry() {
+    const today = new Date();
+    today.setHours(0,0,0,0);
+    const exp = new Date(LICENSE.expiryDate);
+    exp.setHours(0,0,0,0);
+    if (today > exp) {
+      showExpiredScreen();
+      return false;
+    }
+    // Warning: 7 days left
+    const diff = Math.round((exp - today) / (1000*60*60*24));
+    if (diff <= 7) {
+      setTimeout(() => showRenewBanner(diff), 3000);
+    }
+    return true;
+  }
+
+  // ── 3. License Key Validation ────────────────────────────────
+  function checkLicense() {
+    const stored = (localStorage.getItem('_tdp_lk') || '').trim().toUpperCase();
+    if (stored === LICENSE.licenseKey.trim().toUpperCase()) return true;
+
+    // First time — ask for key
+    return false;
+  }
+
+  // ── 4. Screens ───────────────────────────────────────────────
+  function showLicenseScreen() {
+    document.body.innerHTML = `
+      <div style="position:fixed;inset:0;background:linear-gradient(135deg,#1e1b4b,#4c1d95);display:flex;align-items:center;justify-content:center;z-index:99999;font-family:-apple-system,sans-serif;padding:20px">
+        <div style="background:white;border-radius:20px;padding:28px 22px;max-width:360px;width:100%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,0.4)">
+          <div style="font-size:48px;margin-bottom:8px">🎓</div>
+          <div style="font-size:20px;font-weight:900;color:#1e1b4b;margin-bottom:4px">TeacherDesk Pro</div>
+          <div style="font-size:12px;color:#64748b;margin-bottom:22px">Licensed Software — Enter your key to continue</div>
+          <div style="font-size:11px;font-weight:700;color:#475569;text-align:left;margin-bottom:6px;text-transform:uppercase;letter-spacing:0.5px">License Key</div>
+          <input id="lk-inp" type="text" placeholder="e.g. TDP-XXXX-XXXX" style="width:100%;padding:13px 14px;border:2px solid #e2e8f0;border-radius:10px;font-size:15px;font-family:-apple-system,sans-serif;outline:none;text-align:center;letter-spacing:1px;margin-bottom:14px">
+          <button onclick="validateKey()" style="width:100%;padding:14px;background:linear-gradient(135deg,#4f46e5,#7c3aed);color:white;border:none;border-radius:10px;font-size:15px;font-weight:800;cursor:pointer">🔓 Activate App</button>
+          <div id="lk-err" style="color:#dc2626;font-size:12px;font-weight:600;margin-top:10px;display:none">❌ Invalid License Key. Please contact your seller.</div>
+          <div style="margin-top:18px;padding-top:16px;border-top:1px solid #f1f5f9">
+            <div style="font-size:11px;color:#94a3b8">Licensed to</div>
+            <div style="font-size:13px;font-weight:800;color:#334155;margin-top:2px">${LICENSE.buyerName}</div>
+            <div style="font-size:11px;color:#94a3b8;margin-top:1px">${LICENSE.school}</div>
+          </div>
+        </div>
+      </div>
+    `;
+    window.validateKey = function() {
+      const inp = document.getElementById('lk-inp').value.trim().toUpperCase();
+      if (inp === LICENSE.licenseKey.trim().toUpperCase()) {
+        localStorage.setItem('_tdp_lk', inp);
+        location.reload();
+      } else {
+        document.getElementById('lk-err').style.display = 'block';
+        document.getElementById('lk-inp').style.borderColor = '#dc2626';
+      }
+    };
+    document.getElementById('lk-inp').addEventListener('keydown', e => { if(e.key==='Enter') window.validateKey(); });
+  }
+
+  function showExpiredScreen() {
+    document.body.innerHTML = `
+      <div style="position:fixed;inset:0;background:linear-gradient(135deg,#7f1d1d,#991b1b);display:flex;align-items:center;justify-content:center;z-index:99999;font-family:-apple-system,sans-serif;padding:20px">
+        <div style="background:white;border-radius:20px;padding:28px 22px;max-width:360px;width:100%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,0.5)">
+          <div style="font-size:48px;margin-bottom:8px">⛔</div>
+          <div style="font-size:20px;font-weight:900;color:#7f1d1d;margin-bottom:8px">License Expired</div>
+          <div style="font-size:13px;color:#64748b;line-height:1.7;margin-bottom:20px">Your TeacherDesk Pro license expired on<br><strong style="color:#dc2626">${LICENSE.expiryDate}</strong><br><br>Please contact your seller to renew.</div>
+          <div style="background:#fef2f2;border-radius:12px;padding:14px;margin-bottom:16px">
+            <div style="font-size:11px;color:#94a3b8;margin-bottom:4px">Licensed to</div>
+            <div style="font-size:14px;font-weight:800;color:#1e293b">${LICENSE.buyerName}</div>
+            <div style="font-size:11px;color:#64748b">${LICENSE.phone} &nbsp;·&nbsp; ${LICENSE.school}</div>
+          </div>
+          <div style="font-size:12px;color:#94a3b8">📞 Contact seller to renew your subscription</div>
+        </div>
+      </div>
+    `;
+  }
+
+  function showTamperScreen() {
+    const overlay = document.createElement('div');
+    overlay.id = 'tamper-overlay';
+    overlay.style.cssText = 'position:fixed;inset:0;background:rgba(15,23,42,0.97);z-index:999999;display:flex;align-items:center;justify-content:center;font-family:-apple-system,sans-serif;';
+    overlay.innerHTML = `
+      <div style="background:#1e293b;border-radius:20px;padding:28px;max-width:320px;text-align:center;border:2px solid #dc2626">
+        <div style="font-size:40px;margin-bottom:10px">🔒</div>
+        <div style="font-size:17px;font-weight:900;color:white;margin-bottom:8px">Access Restricted</div>
+        <div style="font-size:12px;color:#94a3b8;line-height:1.7">Developer tools detected.<br>This app is protected software.<br><br><span style="color:#f87171;font-weight:700">Unauthorized access attempt has been logged.</span></div>
+        <div style="margin-top:16px;font-size:11px;color:#475569">Licensed to: ${LICENSE.buyerName}</div>
+        <button onclick="document.getElementById('tamper-overlay').remove()" style="margin-top:16px;padding:10px 24px;background:#dc2626;color:white;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer">Close DevTools & Continue</button>
+      </div>
+    `;
+    document.body.appendChild(overlay);
+  }
+
+  function showRenewBanner(days) {
+    const b = document.createElement('div');
+    b.style.cssText = 'position:fixed;top:0;left:0;right:0;background:linear-gradient(135deg,#d97706,#dc2626);color:white;text-align:center;padding:10px 16px;font-size:12px;font-weight:700;z-index:9999;font-family:-apple-system,sans-serif';
+    b.innerHTML = `⚠️ License expires in ${days} day(s). Contact seller to renew. &nbsp;<span onclick="this.parentNode.remove()" style="cursor:pointer;opacity:0.7">✕</span>`;
+    document.body.prepend(b);
+  }
+
+  // ── 5. Watermark (hidden + visible footer) ──────────────────
+  function injectWatermark() {
+    // Hidden meta watermark
+    const m = document.createElement('meta');
+    m.name = 'tdp-license';
+    m.content = `Licensed:${LICENSE.buyerName}|${LICENSE.phone}|${LICENSE.school}|Expiry:${LICENSE.expiryDate}|Key:${LICENSE.licenseKey}`;
+    document.head.appendChild(m);
+
+    // Subtle footer watermark on app
+    const footer = document.createElement('div');
+    footer.style.cssText = 'text-align:center;padding:8px;font-size:10px;color:#cbd5e1;font-family:-apple-system,sans-serif;margin-top:10px;user-select:none';
+    footer.innerHTML = `🔐 Licensed to ${LICENSE.buyerName} · ${LICENSE.school} · Valid till ${LICENSE.expiryDate}`;
+    setTimeout(() => { if(document.body) document.body.appendChild(footer); }, 2000);
+    // Update header with client name + phone
+    if (typeof updateHeaderClientInfo === 'function') updateHeaderClientInfo(LICENSE.buyerName, LICENSE.phone);
+  }
+
+  // ── 6. Boot sequence ────────────────────────────────────────
+  window.addEventListener('DOMContentLoaded', () => {
+    // Check license key first
+    if (!checkLicense()) {
+      showLicenseScreen();
+      return;
+    }
+    // Check expiry
+    if (!checkExpiry()) return;
+    // Inject watermark
+    injectWatermark();
+  });
+
+})();
+
+// ============ DATA ============
+let DB = { students:{}, records:[], profile:{name:'',school:'',classSubj:''}, classes:[] };
+// classes = [{id:'A', label:'6A', subject:'Maths'}, ...]
+let selStatus = '', histFilter = 'all', manageSec = 'A', manageTmp = {};
+
+const STATUS_LABELS = {
+  absent:'Student Absent', cwcopy:'CW Copy Not Brought', hwcopy:'HW Copy Not Brought',
+  incomplete:'Incomplete Work', still:'Still Incomplete Work', good:'Good Work',
+  timely:'Timely Work Complete', practice:'Need More Practice', notanswer:'Not Answering in Class', ptm:'PTM Required'
+};
+
+const GREET = n => `Dear Parents,\nWarm greetings! 🙏\nI am ${n}'s Mathematics teacher. I am always available to help and I also need your support to improve your child's progress.\n\n`;
+const GREET_HIN = n => `प्रिय अभिभावक,\nसादर प्रणाम! 🙏\nमैं ${n} का गणित शिक्षक हूँ। मैं हमेशा सहायता के लिए उपलब्ध हूँ और आपके बच्चे की प्रगति बेहतर करने के लिए आपका सहयोग भी आवश्यक है।\n\n`;
+
+const REMARKS = {
+  absent: {
+    eng: n => GREET(n) + `🏠 ${n} was absent in class today. Please ensure regular attendance as missing classes affects understanding and progress. Hope ${n} is well and returns soon! 💛`,
+    hin: n => GREET_HIN(n) + `🏠 ${n} आज कक्षा में अनुपस्थित रहे। कृपया नियमित उपस्थिति सुनिश्चित करें क्योंकि कक्षा छूटने से समझ और प्रगति प्रभावित होती है। आशा है ${n} जल्द ठीक होकर वापस आएंगे! 💛`
+  },
+  cwcopy: {
+    eng: n => GREET(n) + `📓 ${n} did not bring their Classwork copy today. The copy is essential for daily learning. Please make sure it is packed in the bag every day without fail. 🎒`,
+    hin: n => GREET_HIN(n) + `📓 ${n} आज अपनी क्लासवर्क कॉपी नहीं लाए। कॉपी प्रतिदिन के सीखने के लिए जरूरी है। कृपया सुनिश्चित करें कि यह रोज बस्ते में रहे। 🎒`
+  },
+  hwcopy: {
+    eng: n => GREET(n) + `📒 ${n} did not bring their Homework copy today. Homework is a daily responsibility and the copy must be brought to school every day. Please check the bag before school. 🎒`,
+    hin: n => GREET_HIN(n) + `📒 ${n} आज अपनी होमवर्क कॉपी नहीं लाए। गृहकार्य एक दैनिक जिम्मेदारी है और कॉपी रोज स्कूल लानी चाहिए। कृपया स्कूल से पहले बस्ता जाँचें। 🎒`
+  },
+  incomplete: {
+    eng: n => GREET(n) + `❌ ${n}'s homework is incomplete today. Regular and complete work is very important for learning. Please encourage ${n} to finish all given work sincerely. We believe ${n} can do better! 💪`,
+    hin: n => GREET_HIN(n) + `❌ ${n} का आज का गृहकार्य अधूरा है। नियमित और पूर्ण कार्य सीखने के लिए बहुत जरूरी है। कृपया ${n} को सभी कार्य ईमानदारी से पूरा करने के लिए प्रेरित करें। हमें विश्वास है ${n} बेहतर कर सकते हैं! 💪`
+  },
+  still: {
+    eng: n => GREET(n) + `⚠️ ${n}'s work is still incomplete even after previous reminders. This repeated habit is affecting ${n}'s progress seriously. Kindly have a firm conversation with ${n} at home. Your involvement matters a lot! 🙏`,
+    hin: n => GREET_HIN(n) + `⚠️ पिछली सूचना के बाद भी ${n} का कार्य अभी तक अधूरा है। यह बार-बार की आदत ${n} की प्रगति को गंभीर रूप से प्रभावित कर रही है। कृपया घर पर ${n} से दृढ़ता से बात करें। आपका सहयोग बहुत जरूरी है! 🙏`
+  },
+  good: {
+    eng: n => GREET(n) + `👍 ${n} has done good work today! The effort and sincerity shown is commendable. Keep encouraging ${n} to maintain this positive habit. Well done, ${n}! 🌟`,
+    hin: n => GREET_HIN(n) + `👍 ${n} ने आज अच्छा काम किया है! दिखाई गई मेहनत और ईमानदारी सराहनीय है। ${n} को इस सकारात्मक आदत को बनाए रखने के लिए प्रेरित करते रहें। शाबाश, ${n}! 🌟`
+  },
+  timely: {
+    eng: n => GREET(n) + `⭐ Excellent! ${n} has completed the work on time and with great quality! This punctuality and dedication is truly praiseworthy. ${n} is setting a great example. Keep it up! 🎉`,
+    hin: n => GREET_HIN(n) + `⭐ शानदार! ${n} ने समय पर और बेहतरीन गुणवत्ता के साथ कार्य पूरा किया है! यह समयनिष्ठा और लगन सच में प्रशंसनीय है। ${n} एक बेहतरीन उदाहरण प्रस्तुत कर रहे हैं। ऐसे ही जारी रखें! 🎉`
+  },
+  practice: {
+    eng: n => GREET(n) + `📝 ${n} needs more practice in the topics covered recently. A little extra effort at home with daily revision will make a big difference. Please support ${n} with 15–20 minutes of daily study. 📚`,
+    hin: n => GREET_HIN(n) + `📝 ${n} को हाल ही में पढ़ाए गए विषयों में अधिक अभ्यास की आवश्यकता है। घर पर थोड़ा अतिरिक्त प्रयास और दैनिक पुनरावृत्ति से बड़ा फर्क पड़ेगा। कृपया ${n} को रोज 15–20 मिनट पढ़ाई में सहायता करें। 📚`
+  },
+  notanswer: {
+    eng: n => GREET(n) + `🤐 ${n} is not participating or answering questions in class today. Active participation is key to understanding. Please motivate ${n} to be more confident and involved in class. Confidence grows with practice! 💬`,
+    hin: n => GREET_HIN(n) + `🤐 ${n} आज कक्षा में प्रश्नों का उत्तर नहीं दे रहे और सक्रिय भाग नहीं ले रहे। कक्षा में सक्रिय भागीदारी समझ के लिए जरूरी है। कृपया ${n} को अधिक आत्मविश्वासी और कक्षा में शामिल होने के लिए प्रेरित करें। आत्मविश्वास अभ्यास से बढ़ता है! 💬`
+  },
+  ptm: {
+    eng: n => GREET(n) + `🤝 I would like to share some wonderful progress updates about ${n} with you in person. Your child is growing every day, and together we can make this journey even more beautiful. 🌟\n\nKindly visit the school at your convenience for a brief meeting. Your presence and support means the world to ${n}'s development. We truly believe that when teachers and parents work together, every child shines brighter! ✨\n\nPlease feel free to come any day during school hours. Looking forward to seeing you! 🙏`,
+    hin: n => GREET_HIN(n) + `🤝 मैं ${n} की प्रगति और विकास के बारे में आपसे व्यक्तिगत रूप से कुछ महत्वपूर्ण बातें साझा करना चाहता/चाहती हूँ। आपका बच्चा हर दिन आगे बढ़ रहा है, और मिलकर हम इस यात्रा को और भी शानदार बना सकते हैं। 🌟\n\nकृपया अपनी सुविधानुसार एक बार विद्यालय पधारें। आपकी उपस्थिति ${n} के भविष्य के लिए बहुत महत्वपूर्ण है। जब शिक्षक और अभिभावक मिलकर काम करते हैं, तो हर बच्चा और निखर जाता है! ✨\n\nआप किसी भी दिन विद्यालय समय में आ सकते हैं। आपका इंतजार रहेगा! 🙏`
+  }
+};
+
+// ============ STORAGE ============
+function saveDB() { try { localStorage.setItem('tdesk_v3', JSON.stringify(DB)); } catch(e){} }
+function loadDB() {
+  try { const d = localStorage.getItem('tdesk_v3'); if (d) DB = JSON.parse(d); } catch(e){}
+  if (!DB.classes || !DB.classes.length) DB.classes = [{id:'A',label:'6A',subject:''},{id:'B',label:'6B',subject:''},{id:'C',label:'6C',subject:''},{id:'D',label:'7A',subject:''}];
+  DB.classes.forEach(c => { if (!DB.students[c.id]) DB.students[c.id] = {}; });
+  if (!DB.records) DB.records = [];
+  if (!DB.profile) DB.profile = { name:'', school:'', classSubj:'' };
+}
+
+
+
+// ============ DYNAMIC CLASS MANAGEMENT ============
+
+function getClassId(idx) {
+  return String.fromCharCode(65 + idx); // A,B,C...J for up to 10
+}
+
+function renderClassTabs() {
+  const classes = DB.classes || [];
+  // Section tabs in Students view
+  const secTabsEl = document.getElementById('sec-tabs');
+  if (secTabsEl) {
+    secTabsEl.innerHTML = classes.map((c, i) => `
+      <div class="sec-tab ${i===0?'on':''}" onclick="selectSec('${c.id}',this)">
+        ${c.label}
+        ${c.subject ? `<div style="font-size:9px;opacity:0.7">${c.subject}</div>` : ''}
+        <span class="sec-count" id="cnt-${c.id}">${Object.keys(DB.students[c.id]||{}).length} students</span>
+      </div>`).join('');
+  }
+
+  // Entry dropdown
+  const selSection = document.getElementById('sel-section');
+  if (selSection) {
+    selSection.innerHTML = '<option value="">— Select Class / Section —</option>' +
+      classes.map(c => `<option value="${c.id}">${c.label}${c.subject?' — '+c.subject:''}</option>`).join('');
+  }
+
+  // Record section dropdown
+  const recSection = document.getElementById('rec-section');
+  if (recSection) {
+    recSection.innerHTML = '<option value="">— Select Class / Section —</option>' +
+      classes.map(c => `<option value="${c.id}">${c.label}${c.subject?' — '+c.subject:''}</option>`).join('');
+  }
+
+  // History filter chips
+  const histFilters = document.getElementById('hist-filters');
+  if (histFilters) {
+    histFilters.innerHTML =
+      `<button class="f-chip ${histFilter==='all'?'on':''}" onclick="filterHist('all',this)">All</button>` +
+      classes.map(c => `<button class="f-chip ${histFilter===c.id?'on':''}" onclick="filterHist('${c.id}',this)">${c.label}</button>`).join('') +
+      `<button class="f-chip ${histFilter==='timely'?'on':''}" onclick="filterHist('timely',this)">⭐ Timely</button>
+       <button class="f-chip ${histFilter==='good'?'on':''}" onclick="filterHist('good',this)">👍 Good</button>
+       <button class="f-chip ${histFilter==='incomplete'?'on':''}" onclick="filterHist('incomplete',this)">❌ Incomplete</button>
+       <button class="f-chip ${histFilter==='still'?'on':''}" onclick="filterHist('still',this)">⚠️ Still</button>
+       <button class="f-chip ${histFilter==='absent'?'on':''}" onclick="filterHist('absent',this)">🏠 Absent</button>
+       <button class="f-chip ${histFilter==='ptm'?'on':''}" onclick="filterHist('ptm',this)">🤝 PTM</button>`;
+  }
+
+  // Chapter tabs
+  const chapSetupTabs = document.getElementById('chap-sec-tabs-setup');
+  if (chapSetupTabs) {
+    chapSetupTabs.innerHTML = classes.map((c, i) => `
+      <div class="chap-sec-btn ${i===0?'on':''}" id="csec-${c.id}" onclick="selectChapSec('${c.id}',this)">${c.label}</div>`).join('');
+    if (classes.length) chapSec = classes[0].id;
+  }
+  const chapGridTabs = document.getElementById('chap-sec-tabs-grid');
+  if (chapGridTabs) {
+    chapGridTabs.innerHTML = classes.map((c, i) => `
+      <div class="chap-sec-btn ${i===0?'on':''}" id="cgsec-${c.id}" onclick="selectGridSec('${c.id}',this)">${c.label}</div>`).join('');
+    if (classes.length) gridSec = classes[0].id;
+  }
+
+  // Set manageSec to first class
+  if (classes.length && !classes.find(c=>c.id===manageSec)) {
+    manageSec = classes[0].id;
+    document.getElementById('cur-sec-label').textContent = classes[0].label;
+    document.getElementById('save-sec-label').textContent = classes[0].label;
+  }
+}
+
+function updateSecCounts() {
+  (DB.classes||[]).forEach(c => {
+    const el = document.getElementById('cnt-'+c.id);
+    if (el) el.textContent = Object.keys(DB.students[c.id]||{}).length+' students';
+  });
+}
+
+// Open class manager modal
+function openClassManager() {
+  renderClassManagerList();
+  document.getElementById('class-manager-modal').classList.add('open');
+}
+
+function closeClassManager(e) {
+  if (e.target === document.getElementById('class-manager-modal'))
+    document.getElementById('class-manager-modal').classList.remove('open');
+}
+
+let classTmp = [];
+function renderClassManagerList() {
+  classTmp = JSON.parse(JSON.stringify(DB.classes||[]));
+  if (!classTmp.length) {
+    // Default 4
+    classTmp = [{id:'A',label:'6A',subject:''},{id:'B',label:'6B',subject:''},{id:'C',label:'6C',subject:''},{id:'D',label:'7A',subject:''}];
+  }
+  renderClassManagerHTML();
+}
+
+function renderClassManagerHTML() {
+  const list = document.getElementById('class-manager-list');
+  list.innerHTML = classTmp.map((c, i) => `
+    <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:12px;margin-bottom:10px;display:flex;gap:8px;align-items:center">
+      <div style="width:28px;height:28px;background:linear-gradient(135deg,#4f46e5,#7c3aed);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:900;color:white;flex-shrink:0">${i+1}</div>
+      <input type="text" value="${c.label}" placeholder="Class (e.g. 6A)" maxlength="8"
+        style="flex:1;border:1.5px solid #e2e8f0;border-radius:8px;padding:8px 10px;font-size:14px;font-weight:700;font-family:Inter,sans-serif;outline:none"
+        oninput="classTmp[${i}].label=this.value" onfocus="this.style.borderColor='#4f46e5'" onblur="this.style.borderColor='#e2e8f0'">
+      <input type="text" value="${c.subject||''}" placeholder="Subject (optional)"
+        style="flex:1.5;border:1.5px solid #e2e8f0;border-radius:8px;padding:8px 10px;font-size:13px;font-family:Inter,sans-serif;outline:none"
+        oninput="classTmp[${i}].subject=this.value" onfocus="this.style.borderColor='#4f46e5'" onblur="this.style.borderColor='#e2e8f0'">
+      ${classTmp.length > 1 ? `<button onclick="removeClassEntry(${i})" style="width:30px;height:30px;border:1px solid #fca5a5;border-radius:8px;background:#fff5f5;color:#dc2626;cursor:pointer;font-size:14px;flex-shrink:0">🗑</button>` : ''}
+    </div>`).join('');
+}
+
+function addClassEntry() {
+  if (classTmp.length >= 10) { alert('Maximum 10 classes allowed'); return; }
+  const nextId = getClassId(classTmp.length < 10 ? classTmp.length : 9);
+  const idx = classTmp.length;
+  classTmp.push({ id: getClassId(idx), label: '', subject: '' });
+  renderClassManagerHTML();
+}
+
+function removeClassEntry(i) {
+  if (classTmp.length <= 1) return;
+  classTmp.splice(i, 1);
+  // Reassign IDs
+  classTmp = classTmp.map((c, idx) => ({ ...c, id: getClassId(idx) }));
+  renderClassManagerHTML();
+}
+
+function saveClasses() {
+  // Validate
+  for (let c of classTmp) {
+    if (!c.label.trim()) { alert('All class names must be filled!'); return; }
+  }
+  // Preserve existing student data where possible
+  const oldStudents = JSON.parse(JSON.stringify(DB.students||{}));
+  const oldIds = (DB.classes||[]).map(c=>c.id);
+  
+  DB.classes = classTmp.map((c,i) => ({ id:getClassId(i), label:c.label.trim(), subject:c.subject.trim()||'' }));
+  DB.students = {};
+  DB.classes.forEach((c, i) => {
+    const oldC = (DB.classes||[])[i];
+    DB.students[c.id] = oldStudents[oldIds[i]] || {};
+  });
+  
+  saveDB();
+  document.getElementById('class-manager-modal').classList.remove('open');
+  renderClassTabs();
+  updateSecCounts();
+  manageSec = DB.classes[0].id;
+  manageTmp = JSON.parse(JSON.stringify(DB.students[manageSec]||{}));
+  renderStudents();
+  toast('✅ Classes saved!');
+}
+
+// ============ HISTORY EXPORT (Change 4) ============
+
+function exportHistoryText() {
+  const q = (document.getElementById('search-inp').value||'').toLowerCase();
+  let data = DB.records;
+  if (histFilter !== 'all') {
+    if ((DB.classes||[]).some(c=>c.id===histFilter)) data = data.filter(r=>r.sec===histFilter);
+    else data = data.filter(r=>r.status===histFilter);
+  }
+  if (q) data = data.filter(r=>r.name.toLowerCase().includes(q));
+
+  if (!data.length) { toast('⚠️ No records to export'); return; }
+
+  let txt = '📊 AOM HW Track — Homework History Report\n';
+  txt += '─'.repeat(40) + '\n';
+  txt += `Filter: ${histFilter==='all'?'All Records':histFilter} | Total: ${data.length} records\n`;
+  txt += `Generated: ${new Date().toLocaleDateString('en-IN')}\n`;
+  txt += '─'.repeat(40) + '\n\n';
+
+  data.forEach((rec, i) => {
+    txt += `${i+1}. ${rec.name} | ${getSecLabel(rec.sec)} | Roll ${rec.roll} | ${rec.date}\n`;
+    txt += `   Status: ${STATUS_LABELS[rec.status]||rec.status}\n`;
+    txt += `   ${rec.remarkEng.split('\n').slice(2).join(' ').substring(0,120)}...\n\n`;
+  });
+  copyToClipboard(txt, '📋 History copied!');
+}
+
+function exportHistoryCSV() {
+  const q = (document.getElementById('search-inp').value||'').toLowerCase();
+  let data = DB.records;
+  if (histFilter !== 'all') {
+    if ((DB.classes||[]).some(c=>c.id===histFilter)) data = data.filter(r=>r.sec===histFilter);
+    else data = data.filter(r=>r.status===histFilter);
+  }
+  if (q) data = data.filter(r=>r.name.toLowerCase().includes(q));
+
+  if (!data.length) { toast('⚠️ No records to export'); return; }
+
+  let csv = 'Sr,Student Name,Class,Roll No,Date,Status,Remark (English)\n';
+  data.forEach((rec, i) => {
+    const engRemark = (rec.remarkEng||'').replace(/"/g,"'").replace(/\n/g,' ');
+    csv += `${i+1},"${rec.name}","${getSecLabel(rec.sec)}",${rec.roll},"${rec.date}","${STATUS_LABELS[rec.status]||rec.status}","${engRemark}"\n`;
+  });
+
+  const blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `AOM_HWTrack_History_${new Date().toISOString().slice(0,10)}.csv`;
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  setTimeout(()=>URL.revokeObjectURL(url),2000);
+  toast('✅ CSV Downloaded!');
+}
+
+function exportHistoryHTML() {
+  const q = (document.getElementById('search-inp').value||'').toLowerCase();
+  let data = DB.records;
+  if (histFilter !== 'all') {
+    if ((DB.classes||[]).some(c=>c.id===histFilter)) data = data.filter(r=>r.sec===histFilter);
+    else data = data.filter(r=>r.status===histFilter);
+  }
+  if (q) data = data.filter(r=>r.name.toLowerCase().includes(q));
+
+  if (!data.length) { toast('⚠️ No records to export'); return; }
+
+  let rows = data.map((rec,i) => `
+    <tr style="background:${i%2===0?'#f8fafc':'white'}">
+      <td>${i+1}</td>
+      <td><strong>${rec.name}</strong></td>
+      <td>${getSecLabel(rec.sec)}</td>
+      <td>${rec.roll}</td>
+      <td>${rec.date}</td>
+      <td><span style="padding:3px 8px;border-radius:10px;font-size:11px;font-weight:700;background:#eef2ff;color:#4f46e5">${STATUS_LABELS[rec.status]||rec.status}</span></td>
+    </tr>`).join('');
+
+  const html = `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>History Report</title>
+  <style>body{font-family:Arial,sans-serif;padding:20px;font-size:13px}h2{color:#4f46e5}table{width:100%;border-collapse:collapse}th{background:linear-gradient(135deg,#4f46e5,#7c3aed);color:white;padding:10px 8px;text-align:left}td{padding:8px;border-bottom:1px solid #e2e8f0}</style></head>
+  <body><h2>📊 AOM HW Track — History Report</h2>
+  <p style="color:#64748b">Generated: ${new Date().toLocaleDateString('en-IN')} | Total Records: ${data.length}</p>
+  <table><thead><tr><th>#</th><th>Student</th><th>Class</th><th>Roll</th><th>Date</th><th>Status</th></tr></thead>
+  <tbody>${rows}</tbody></table>
+  
+  <!-- ===== TDP CREDIT STRIP — Auto-injected ===== -->
+  <div id="tdp-fixed-credit">
+    <span class="wm-left">🎓 manish sharma &nbsp;·&nbsp; 📱 9460445196</span>
+    <span class="wm-right">⛔ Sharing Illegal</span>
+  </div>
+  <!-- ⚠️ PIRACY WARNING — AUTO-INJECTED -->
+  <div id="piracy-warn" style="
+    position:fixed;bottom:0;left:0;right:0;z-index:99998;
+    background:linear-gradient(135deg,#7f1d1d,#991b1b);
+    color:white;text-align:center;padding:7px 12px;
+    font-family:-apple-system,sans-serif;font-size:11px;font-weight:700;
+    display:flex;align-items:center;justify-content:center;gap:6px;
+    border-top:2px solid #dc2626;
+  ">
+    🔒 Licensed to manish sharma · 9460445196 &nbsp;|&nbsp; ⛔ Yeh file kisi aur ko dena ILLEGAL hai
+    <span onclick="document.getElementById('piracy-warn').style.display='none'" style="cursor:pointer;opacity:0.6;margin-left:8px;font-size:14px">✕</span>
+  </div>
+</body></html>`;
+
+  const blob = new Blob([html], {type:'text/html;charset=utf-8;'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `AOM_HWTrack_History_${new Date().toISOString().slice(0,10)}.html`;
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  setTimeout(()=>URL.revokeObjectURL(url),2000);
+  toast('✅ Report Downloaded! Open in browser → Print → Save as PDF/Word');
+}
+
+// ============ RECORD EXPORT (Change 4) ============
+
+function exportRecordCSV() {
+  if (!window._currentReport || !currentRecStudent) { toast('⚠️ Load a student record first'); return; }
+  const { sec, roll, st, records } = currentRecStudent;
+  let csv = 'Date,Status,Remark English\n';
+  records.forEach(r => {
+    const eng = (r.remarkEng||'').replace(/"/g,"'").replace(/\n/g,' ');
+    csv += `"${r.date}","${STATUS_LABELS[r.status]||r.status}","${eng}"\n`;
+  });
+  const safeName = (st.name||'Student').replace(/\s+/g,'_');
+  const blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a'); a.href=url; a.download=`AOM_Record_${safeName}.csv`;
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  setTimeout(()=>URL.revokeObjectURL(url),2000);
+  toast('✅ Student CSV Downloaded!');
+}
+
+function exportRecordHTML() {
+  if (!currentRecStudent) { toast('⚠️ Load a student record first'); return; }
+  const { sec, roll, st, records } = currentRecStudent;
+  const name = st.name||'Student';
+  const rows = records.map((r,i) => `<tr style="background:${i%2===0?'#f8fafc':'white'}">
+    <td>${r.date}</td>
+    <td><span style="padding:3px 8px;border-radius:10px;font-size:11px;background:#eef2ff;color:#4f46e5;font-weight:700">${STATUS_LABELS[r.status]||r.status}</span></td>
+    <td style="font-size:12px;color:#475569">${(r.remarkEng||'').split('\n').slice(2).join(' ').substring(0,150)}...</td>
+  </tr>`).join('');
+
+  const html = `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>${name} — Progress Report</title>
+  <style>body{font-family:Arial,sans-serif;padding:20px;font-size:13px}h2{color:#4f46e5}h3{color:#334155}.header-box{background:linear-gradient(135deg,#4f46e5,#7c3aed);color:white;padding:20px;border-radius:12px;margin-bottom:20px}table{width:100%;border-collapse:collapse}th{background:linear-gradient(135deg,#4f46e5,#7c3aed);color:white;padding:10px 8px;text-align:left}td{padding:8px;border-bottom:1px solid #e2e8f0}</style></head>
+  <body>
+  <div class="header-box">
+    <h2 style="margin:0 0 4px">📊 Student Progress Report</h2>
+    <div>👤 ${name} | 📚 ${getSecLabel(sec)} | Roll ${roll}</div>
+    <div style="margin-top:6px;opacity:0.8">📅 Generated: ${new Date().toLocaleDateString('en-IN')} | Total Entries: ${records.length}</div>
+  </div>
+  ${window._currentReport ? `<pre style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:16px;font-size:12px;white-space:pre-wrap;margin-bottom:20px">${window._currentReport}</pre>` : ''}
+  <h3>📋 Detailed Entry Records</h3>
+  <table><thead><tr><th>Date</th><th>Status</th><th>Remark</th></tr></thead>
+  <tbody>${rows}</tbody></table>
+  <p style="color:#94a3b8;font-size:11px;margin-top:20px">Generated by AOM HW Track — Art of Manish</p>
+  </body></html>`;
+
+  const blob = new Blob([html], {type:'text/html;charset=utf-8;'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a'); a.href=url; a.download=`AOM_Record_${(st.name||'Student').replace(/\s+/g,'_')}.html`;
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  setTimeout(()=>URL.revokeObjectURL(url),2000);
+  toast('✅ Report Downloaded! Open in browser → Print → Save as PDF');
+}
+
+// ============ CHAPTER EXPORT (Change 4) ============
+
+function exportChapterCSV() {
+  ensureChapData();
+  const sec = gridSec;
+  const students = DB.students[sec]||{};
+  const skeys = Object.keys(students).map(Number).sort((a,b)=>a-b);
+  const chaps = DB.chapters;
+  if (!chaps.length) { toast('⚠️ No chapters set up yet'); return; }
+
+  let csv = 'Roll,Student Name';
+  chaps.forEach(ch => { csv += `,Ch${ch.num} CW,Ch${ch.num} HW`; });
+  csv += '\n';
+
+  const TICK_TEXT = {green:'Timely',lgreen:'1 Late',blue:'2 Late',red:'3-4 Late',cross:'Not Done','':'—'};
+  skeys.forEach(roll => {
+    const st = students[roll];
+    csv += `${roll},"${st.name||'Roll '+roll}"`;
+    chaps.forEach(ch => {
+      const rec = (DB.chapRecords[sec]&&DB.chapRecords[sec][roll]&&DB.chapRecords[sec][roll][ch.num])||{cw:'',hw:''};
+      csv += `,"${TICK_TEXT[rec.cw]||'—'}","${TICK_TEXT[rec.hw]||'—'}"`;
+    });
+    csv += '\n';
+  });
+
+  const blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a'); a.href=url; a.download=`AOM_Chapters_${getSecLabel(sec)}.csv`;
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  setTimeout(()=>URL.revokeObjectURL(url),2000);
+  toast('✅ Chapter CSV Downloaded!');
+}
+
+function exportChapterHTML() {
+  ensureChapData();
+  const sec = gridSec;
+  const students = DB.students[sec]||{};
+  const skeys = Object.keys(students).map(Number).sort((a,b)=>a-b);
+  const chaps = DB.chapters;
+  if (!chaps.length) { toast('⚠️ No chapters set up yet'); return; }
+
+  const TICK_HTML = {
+    green:'<span style="color:#059669;font-weight:700">✅ Timely</span>',
+    lgreen:'<span style="color:#0f172a;font-weight:700">✔ 1 Late</span>',
+    blue:'<span style="color:#0284c7;font-weight:700">✔ 2 Late</span>',
+    red:'<span style="color:#dc2626;font-weight:700">✔ 3-4 Late</span>',
+    cross:'<span style="color:#dc2626">❌ Not Done</span>',
+    '':'<span style="color:#94a3b8">—</span>'
+  };
+
+  const headerCols = chaps.map(ch => `<th colspan="2" style="background:linear-gradient(135deg,#4f46e5,#7c3aed);color:white;padding:8px;font-size:11px;border:1px solid #6366f1">Ch ${ch.num}<br><span style="font-weight:500;font-size:9px">${ch.name}</span></th>`).join('');
+  const subCols = chaps.map(() => `<th style="background:#4338ca;color:white;padding:4px;font-size:9px;border:1px solid #6366f1">CW</th><th style="background:#4338ca;color:white;padding:4px;font-size:9px;border:1px solid #6366f1">HW</th>`).join('');
+
+  const rows = skeys.map((roll,i) => {
+    const st = students[roll];
+    let cols = chaps.map(ch => {
+      const rec = (DB.chapRecords[sec]&&DB.chapRecords[sec][roll]&&DB.chapRecords[sec][roll][ch.num])||{cw:'',hw:''};
+      return `<td style="padding:5px;text-align:center;border:1px solid #e2e8f0;font-size:11px">${TICK_HTML[rec.cw]||TICK_HTML['']}</td><td style="padding:5px;text-align:center;border:1px solid #e2e8f0;font-size:11px">${TICK_HTML[rec.hw]||TICK_HTML['']}</td>`;
+    }).join('');
+    return `<tr style="background:${i%2===0?'#f8fafc':'white'}">
+      <td style="padding:6px 8px;border:1px solid #e2e8f0;font-weight:700">${roll}</td>
+      <td style="padding:6px 8px;border:1px solid #e2e8f0;font-weight:700">${st.name||'Roll '+roll}</td>
+      ${cols}
+    </tr>`;
+  }).join('');
+
+  const html = `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Chapter Record — ${getSecLabel(sec)}</title>
+  <style>body{font-family:Arial,sans-serif;padding:20px;font-size:13px}h2{color:#4f46e5}table{border-collapse:collapse;width:100%}</style></head>
+  <body>
+  <h2>📚 Chapter CW & HW Record — ${getSecLabel(sec)}</h2>
+  <p style="color:#64748b">Generated: ${new Date().toLocaleDateString('en-IN')} | Students: ${skeys.length} | Chapters: ${chaps.length}</p>
+  <div style="overflow-x:auto">
+  <table>
+    <thead>
+      <tr><th rowspan="2" style="background:linear-gradient(135deg,#4f46e5,#7c3aed);color:white;padding:8px;border:1px solid #6366f1">Roll</th>
+          <th rowspan="2" style="background:linear-gradient(135deg,#4f46e5,#7c3aed);color:white;padding:8px;border:1px solid #6366f1">Name</th>
+          ${headerCols}</tr>
+      <tr>${subCols}</tr>
+    </thead>
+    <tbody>${rows}</tbody>
+  </table>
+  </div>
+  <p style="color:#94a3b8;font-size:11px;margin-top:20px">Generated by AOM HW Track — Art of Manish</p>
+  </body></html>`;
+
+  const blob = new Blob([html], {type:'text/html;charset=utf-8;'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a'); a.href=url; a.download=`AOM_Chapters_${getSecLabel(sec)}.html`;
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  setTimeout(()=>URL.revokeObjectURL(url),2000);
+  toast('✅ Chapter Report Downloaded! Open in browser to print/save as PDF');
+}
+
+// Update header with client info (called from injectWatermark in LICENSE section)
+function updateHeaderClientInfo(name, phone) {
+  const el = document.getElementById('header-client-info');
+  if (el && name && name !== 'BUYER_NAME') {
+    el.textContent = name + (phone && phone !== 'BUYER_PHONE' ? '  ·  📱 ' + phone : '');
+    el.style.display = 'block';
+  }
+}
+
+// ============ INIT ============
+function initApp() {
+  loadDB();
+  setupDate();
+  updateHeader();
+  renderClassTabs();
+  updateDashStats();
+  document.getElementById('inp-date').value = new Date().toISOString().split('T')[0];
+  if (DB.classes && DB.classes.length) manageSec = DB.classes[0].id;
+  manageTmp = JSON.parse(JSON.stringify(DB.students[manageSec] || {}));
+  updateSecCounts();
+  renderStudents();
+  setTimeout(() => { document.getElementById('splash').classList.add('hide'); }, 1800);
+}
+
+function setupDate() {
+  const now = new Date();
+  const h = now.getHours();
+  document.getElementById('greeting-time').textContent = h < 12 ? 'morning' : h < 17 ? 'afternoon' : 'evening';
+  const days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  document.getElementById('display-date').textContent = `${days[now.getDay()]}, ${now.getDate()} ${months[now.getMonth()]} ${now.getFullYear()}`;
+}
+
+function updateHeader() {
+  const p = DB.profile;
+  document.getElementById('display-name').textContent = p.name ? p.name + (p.classSubj ? ' · ' + p.classSubj : '') : 'AOM HW Track';
+}
+
+function updateDashStats() {
+  const total = Object.values(DB.students).reduce((a,s) => a + Object.keys(s).length, 0);
+  const today = new Date().toISOString().split('T')[0];
+  const todayR = DB.records.filter(r => r.date === today).length;
+  const weekAgo = new Date(Date.now() - 7*86400000).toISOString().split('T')[0];
+  const weekR = DB.records.filter(r => r.date >= weekAgo).length;
+  const issues = DB.records.filter(r => r.status === 'incomplete' || r.status === 'still').length;
+  document.getElementById('s-total').textContent = total;
+  document.getElementById('s-today').textContent = todayR;
+  document.getElementById('s-week').textContent = weekR;
+  document.getElementById('s-issues').textContent = issues;
+}
+
+// ============ TABS ============
+function showTab(t) {
+  ['dash','entry','history','students','tips','record','chapter'].forEach(v => {
+    document.getElementById('view-'+v).classList.toggle('active', v===t);
+    document.getElementById('tab-'+v).classList.toggle('active', v===t);
+    document.getElementById('nav-'+v).classList.toggle('on', v===t);
+  });
+  if (t==='history') renderHistory();
+  if (t==='students') { renderClassTabs(); manageTmp = JSON.parse(JSON.stringify(DB.students[manageSec]||{})); renderStudents(); }
+  if (t==='dash') updateDashStats();
+  if (t==='record') { resetRecordView(); }
+  if (t==='chapter') { renderChapSetup(); renderChapGrid(); }
+}
+
+// ============ ENTRY ============
+function loadRolls() {
+  const sec = document.getElementById('sel-section').value;
+  const roll = document.getElementById('sel-roll');
+  roll.innerHTML = '<option value="">— Select Roll No —</option>';
+  document.getElementById('student-display').style.display = 'none';
+  selStatus = ''; clearStatusBtns();
+  document.getElementById('remark-section').style.display = 'none';
+  if (!sec) return;
+  Object.keys(DB.students[sec]||{}).map(Number).sort((a,b)=>a-b).forEach(k => {
+    roll.innerHTML += `<option value="${k}">${k} — ${DB.students[sec][k].name||'(No name)'}</option>`;
+  });
+}
+
+function fillStudent() {
+  const sec = document.getElementById('sel-section').value;
+  const roll = document.getElementById('sel-roll').value;
+  const st = roll && sec ? DB.students[sec][roll] : null;
+  const disp = document.getElementById('student-display');
+  if (st) {
+    const initials = (st.name||'?').charAt(0).toUpperCase();
+    disp.innerHTML = `<div class="name-display"><div class="nd-avatar">${initials}</div><div class="nd-info"><div class="nd-name">${st.name}</div><div class="nd-meta">Roll ${roll} · ${getSecLabel(sec)}${st.father?' · 👨 '+st.father:''}${st.mother?' · 👩 '+st.mother:''}</div></div></div>`;
+    disp.style.display = 'block';
+  } else { disp.style.display = 'none'; }
+  selStatus = ''; clearStatusBtns();
+  document.getElementById('remark-section').style.display = 'none';
+}
+
+function clearStatusBtns() {
+  ['absent','cwcopy','hwcopy','incomplete','still','good','timely','practice','notanswer','ptm'].forEach(s => { const el=document.getElementById('opt-'+s); if(el) el.className = 's-btn'; });
+}
+
+function selectStatus(s) {
+  const name = getStudentName();
+  if (!name) { toast('⚠️ Please select a student first!'); return; }
+  selStatus = s;
+  clearStatusBtns();
+  document.getElementById('opt-'+s).classList.add('sel-'+s);
+  showRemark();
+}
+
+function getStudentName() {
+  const sec = document.getElementById('sel-section').value;
+  const roll = document.getElementById('sel-roll').value;
+  return sec && roll && DB.students[sec][roll] ? DB.students[sec][roll].name || '' : '';
+}
+
+function showRemark() {
+  const name = getStudentName();
+  if (!name || !selStatus) return;
+  const r = REMARKS[selStatus];
+  document.getElementById('r-eng').innerHTML = r.eng(name).replace(/\n/g,'<br>');
+  document.getElementById('r-hin').innerHTML = r.hin(name).replace(/\n/g,'<br>');
+  const box = document.getElementById('remark-box');
+  box.className = 'remark-wrap rb-'+selStatus;
+  const borderMap = {absent:'#64748b',cwcopy:'#a21caf',hwcopy:'#c2410c',incomplete:'var(--red)',still:'var(--amber)',good:'var(--green)',timely:'var(--blue)',practice:'#ca8a04',notanswer:'#b91c1c',ptm:'var(--purple)'};
+  box.style.borderLeftColor = borderMap[selStatus]||'var(--primary)';
+  document.getElementById('remark-section').style.display = 'block';
+  document.getElementById('remark-section').scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+
+function getFullRemark() {
+  const name = getStudentName();
+  if (!name || !selStatus) return '';
+  const r = REMARKS[selStatus];
+  return r.eng(name) + '\n\n────────────────\n\n' + r.hin(name);
+}
+
+function copyToClipboard(txt, label) {
+  label = label || '📋 Copied!';
+  // Modern API
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(txt).then(() => toast(label)).catch(() => fallbackCopy(txt, label));
+  } else {
+    fallbackCopy(txt, label);
+  }
+}
+function fallbackCopy(txt, label) {
+  const ta = document.createElement('textarea');
+  ta.value = txt;
+  ta.setAttribute('readonly', '');
+  ta.style.cssText = 'position:fixed;top:0;left:0;opacity:0;font-size:16px;';
+  document.body.appendChild(ta);
+  ta.focus();
+  ta.select();
+  try {
+    const ok = document.execCommand('copy');
+    toast(ok ? label : '⚠️ Copy failed — please copy manually');
+  } catch(e) {
+    toast('⚠️ Copy failed — please copy manually');
+  }
+  document.body.removeChild(ta);
+}
+function copyRemark() {
+  const txt = getFullRemark();
+  if (!txt) { toast('Nothing to copy'); return; }
+  copyToClipboard(txt, '📋 Remark copied!');
+}
+
+function sendWA(who) {
+  const sec = document.getElementById('sel-section').value;
+  const roll = document.getElementById('sel-roll').value;
+  const name = getStudentName();
+  if (!sec||!roll||!name||!selStatus) { toast('⚠️ Fill all fields first'); return; }
+  const st = DB.students[sec][roll];
+  const num = who==='father' ? st.father||'' : st.mother||'';
+  if (!num) { toast(`⚠️ ${who==='father'?'Father':'Mother'} number not saved. Add in Students tab.`); return; }
+  const r = REMARKS[selStatus];
+  const msg = encodeURIComponent(r.eng(name) + '\n\n────────────────\n\n' + r.hin(name));
+  const clean = num.replace(/\D/g,'');
+  const waNum = clean.startsWith('91') ? clean : '91'+clean;
+  window.open('https://wa.me/'+waNum+'?text='+msg, '_blank');
+}
+
+function saveEntry() {
+  const sec = document.getElementById('sel-section').value;
+  const roll = document.getElementById('sel-roll').value;
+  const name = getStudentName();
+  const date = document.getElementById('inp-date').value;
+  if (!sec||!roll||!name||!date||!selStatus) { toast('⚠️ Please fill all fields!'); return; }
+  const r = REMARKS[selStatus];
+  DB.records.unshift({ sec, roll:parseInt(roll), name, date, status:selStatus, remarkEng:r.eng(name), remarkHin:r.hin(name), ts:Date.now() });
+  saveDB(); toast('✅ Record saved!');
+  document.getElementById('sel-roll').value='';
+  document.getElementById('student-display').style.display='none';
+  selStatus=''; clearStatusBtns();
+  document.getElementById('remark-section').style.display='none';
+  updateDashStats();
+}
+
+// ============ HISTORY ============
+function renderHistory() {
+  const list = document.getElementById('history-list');
+  const q = (document.getElementById('search-inp').value||'').toLowerCase();
+  let data = DB.records;
+  if (histFilter==='all') {}
+  else if ((DB.classes||[]).some(c=>c.id===histFilter)) data = data.filter(r=>r.sec===histFilter);
+  else data = data.filter(r=>r.status===histFilter);
+  if (q) data = data.filter(r=>r.name.toLowerCase().includes(q));
+  if (!data.length) { list.innerHTML='<div class="empty"><div class="e-ico">📭</div><div class="e-txt">No records found</div><div class="e-sub">Try a different filter or add entries</div></div>'; return; }
+  list.innerHTML = data.map(rec => {
+    const realIdx = DB.records.indexOf(rec);
+    const st = DB.students[rec.sec]&&DB.students[rec.sec][rec.roll];
+    const hasFather = st&&st.father, hasMother = st&&st.mother;
+    const initials = rec.name.charAt(0).toUpperCase();
+    return `<div class="h-card">
+      <div class="h-card-top">
+        <div class="h-avatar av-${rec.status}">${initials}</div>
+        <div class="h-info">
+          <div class="h-name">${rec.name}</div>
+          <div class="h-meta">Roll ${rec.roll} · ${getSecLabel(rec.sec)} · ${rec.date}</div>
+        </div>
+        <span class="h-pill pill-${rec.status}">${STATUS_LABELS[rec.status]}</span>
+      </div>
+      <div class="h-preview">${rec.remarkEng.replace(/\n/g,' ').substring(0,140)}…</div>
+      <div class="h-actions">
+        <button class="h-act h-copy" onclick="copyHistRemark(${realIdx})">📋 Copy</button>
+        ${hasFather?`<button class="h-act h-waf" onclick="waHist(${realIdx},'father')">👨 Father</button>`:''}
+        ${hasMother?`<button class="h-act h-wam" onclick="waHist(${realIdx},'mother')">👩 Mother</button>`:''}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function filterHist(f, btn) {
+  histFilter = f;
+  document.querySelectorAll('.f-chip').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  renderHistory();
+}
+
+function copyHistRemark(idx) {
+  const rec = DB.records[idx]; if (!rec) return;
+  const txt = rec.remarkEng + '\n\n────────────────\n\n' + rec.remarkHin;
+  copyToClipboard(txt, '📋 Copied!');
+}
+
+function waHist(idx, who) {
+  const rec = DB.records[idx]; if (!rec) return;
+  const st = DB.students[rec.sec]&&DB.students[rec.sec][rec.roll];
+  const num = who==='father'?st&&st.father:st&&st.mother;
+  if (!num) { toast('⚠️ Phone number not saved'); return; }
+  const msg = encodeURIComponent(rec.remarkEng+'\n\n────────────────\n\n'+rec.remarkHin);
+  const clean = num.replace(/\D/g,'');
+  const waNum = clean.startsWith('91')?clean:'91'+clean;
+  window.open('https://wa.me/'+waNum+'?text='+msg,'_blank');
+}
+
+// ============ STUDENTS ============
+function updateSecCounts() {
+  ['A','B','C','D'].forEach(s => {
+    document.getElementById('cnt-'+s).textContent = Object.keys(DB.students[s]||{}).length+' students';
+  });
+}
+
+function selectSec(s, btn) {
+  manageSec = s;
+  document.querySelectorAll('.sec-tab').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  document.getElementById('cur-sec-label').textContent = getSecLabel(s);
+  document.getElementById('save-sec-label').textContent = getSecLabel(s);
+  manageTmp = JSON.parse(JSON.stringify(DB.students[s]||{}));
+  renderStudents();
+}
+
+function renderStudents() {
+  const list = document.getElementById('student-list');
+  const keys = Object.keys(manageTmp).map(Number).sort((a,b)=>a-b);
+  if (!keys.length) {
+    list.innerHTML='<div class="empty"><div class="e-ico">👤</div><div class="e-txt">No students in Section '+manageSec+'</div><div class="e-sub">Tap Add Student below to begin</div></div>';
+    return;
+  }
+  list.innerHTML = keys.map(k => `
+    <div class="student-card" id="sc-${k}">
+      <div class="sc-header" onclick="toggleSC(${k})">
+        <div class="sc-roll">${k}</div>
+        <input class="sc-name-inp" type="text" value="${manageTmp[k].name||''}" placeholder="Student name" onclick="event.stopPropagation()" onchange="manageTmp[${k}].name=this.value">
+        <span class="sc-expand" id="exp-${k}">▼</span>
+      </div>
+      <div class="sc-body" id="scb-${k}">
+        <div class="sc-body-grid">
+          <div class="phone-field"><label>👨 Father Mobile</label><input type="tel" value="${manageTmp[k].father||''}" placeholder="10-digit number" onchange="manageTmp[${k}].father=this.value"></div>
+          <div class="phone-field"><label>👩 Mother Mobile</label><input type="tel" value="${manageTmp[k].mother||''}" placeholder="10-digit number" onchange="manageTmp[${k}].mother=this.value"></div>
+        </div>
+        <div class="sc-del"><button class="del-btn" onclick="delStudent(${k})">🗑 Delete</button></div>
+      </div>
+    </div>`).join('');
+}
+
+function toggleSC(k) {
+  const body = document.getElementById('scb-'+k);
+  const exp = document.getElementById('exp-'+k);
+  const isOpen = body.classList.contains('open');
+  body.classList.toggle('open', !isOpen);
+  exp.classList.toggle('open', !isOpen);
+}
+
+function delStudent(k) {
+  if (!confirm(`Delete Roll ${k} — ${manageTmp[k].name||''}?`)) return;
+  delete manageTmp[k]; renderStudents();
+}
+
+function addStudent() {
+  const keys = Object.keys(manageTmp).map(Number);
+  const next = keys.length ? Math.max(...keys)+1 : 1;
+  manageTmp[next] = {name:'',father:'',mother:''};
+  renderStudents();
+  setTimeout(()=>{ const el=document.querySelector(`#sc-${next} .sc-name-inp`); if(el){el.focus();toggleSC(next);} },100);
+}
+
+function saveStudents() {
+  const keys = Object.keys(manageTmp);
+  for (let k of keys) {
+    if (!manageTmp[k].name||!manageTmp[k].name.trim()) { toast('⚠️ Fill all student names!'); return; }
+  }
+  DB.students[manageSec] = JSON.parse(JSON.stringify(manageTmp));
+  saveDB(); updateSecCounts(); toast(`✅ ${getSecLabel(manageSec)} saved — ${keys.length} students`);
+}
+
+// ============ DASHBOARD ============
+function toggleProb(el) {
+  el.querySelector('.pc-body').style.display = el.querySelector('.pc-body').style.display==='none'?'block':'none';
+}
+
+// ============ PROFILE ============
+function openProfile() {
+  const p = DB.profile;
+  document.getElementById('teacher-name-inp').value = p.name||'';
+  document.getElementById('school-name-inp').value = p.school||'';
+  document.getElementById('class-subj-inp').value = p.classSubj||'';
+  document.getElementById('profile-modal').classList.add('open');
+}
+function closeProfile(e) { if(e.target===document.getElementById('profile-modal')) document.getElementById('profile-modal').classList.remove('open'); }
+function saveProfile() {
+  DB.profile.name = document.getElementById('teacher-name-inp').value;
+  DB.profile.school = document.getElementById('school-name-inp').value;
+  DB.profile.classSubj = document.getElementById('class-subj-inp').value;
+  saveDB(); updateHeader();
+}
+function saveProfileClose() { saveProfile(); document.getElementById('profile-modal').classList.remove('open'); toast('✅ Profile saved!'); }
+
+// ============ TOAST ============
+function toast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.style.opacity = 1;
+  setTimeout(()=>t.style.opacity=0, 2800);
+}
+
+
+
+// ============ STUDENT RECORD ============
+// Dynamic section name resolver
+function getSecName(id) {
+  const c = (DB.classes||[]).find(x=>x.id===id);
+  return c ? (c.label + (c.subject?' — '+c.subject:'')) : id;
+}
+function getSecLabel(id) {
+  const c = (DB.classes||[]).find(x=>x.id===id);
+  return c ? c.label : id;
+}
+const ALL_STATUSES = ['absent','cwcopy','hwcopy','incomplete','still','good','timely','practice','notanswer','ptm'];
+const STATUS_COLORS = {
+  absent:'#64748b', cwcopy:'#a21caf', hwcopy:'#c2410c',
+  incomplete:'#dc2626', still:'#d97706', good:'#059669',
+  timely:'#0284c7', practice:'#ca8a04', notanswer:'#b91c1c', ptm:'#7c3aed'
+};
+const STATUS_EMOJI = {
+  absent:'🏠', cwcopy:'📓', hwcopy:'📒',
+  incomplete:'❌', still:'⚠️', good:'👍',
+  timely:'⭐', practice:'📝', notanswer:'🤐', ptm:'🤝'
+};
+
+let currentRecStudent = null;
+
+function resetRecordView() {
+  document.getElementById('rec-section').value = '';
+  document.getElementById('rec-roll').innerHTML = '<option value="">— Select Roll No —</option>';
+  document.getElementById('rec-output').innerHTML = '';
+  currentRecStudent = null;
+}
+
+function loadRecordRolls() {
+  const sec = document.getElementById('rec-section').value;
+  const roll = document.getElementById('rec-roll');
+  roll.innerHTML = '<option value="">— Select Roll No —</option>';
+  document.getElementById('rec-output').innerHTML = '';
+  if (!sec) return;
+  Object.keys(DB.students[sec]||{}).map(Number).sort((a,b)=>a-b).forEach(k => {
+    roll.innerHTML += `<option value="${k}">${k} — ${DB.students[sec][k].name||'(No name)'}</option>`;
+  });
+}
+
+function loadStudentRecord() {
+  const sec = document.getElementById('rec-section').value;
+  const roll = document.getElementById('rec-roll').value;
+  if (!sec || !roll) return;
+  const st = DB.students[sec][roll];
+  if (!st) return;
+  const records = DB.records.filter(r => r.sec === sec && r.roll == roll).sort((a,b) => a.date.localeCompare(b.date));
+  currentRecStudent = { sec, roll, st, records };
+  renderStudentRecord(sec, roll, st, records);
+}
+
+function renderStudentRecord(sec, roll, st, records) {
+  const name = st.name || 'Student';
+  const initials = name.charAt(0).toUpperCase();
+  const total = records.length;
+  const secName = getSecLabel(sec);
+
+  // Count each status
+  const counts = {};
+  ALL_STATUSES.forEach(s => counts[s] = 0);
+  records.forEach(r => { if (counts[r.status] !== undefined) counts[r.status]++; });
+
+  const positives = (counts.good + counts.timely);
+  const negatives = (counts.incomplete + counts.still + counts.absent + counts.cwcopy + counts.hwcopy + counts.practice + counts.notanswer);
+  const efficiency = total > 0 ? Math.round((positives / total) * 100) : 0;
+  const completionRate = total > 0 ? Math.round(((counts.good + counts.timely + counts.incomplete + counts.still) > 0 ? (counts.good + counts.timely) / (counts.good + counts.timely + counts.incomplete + counts.still) * 100 : 0)) : 0;
+
+  // Growth trend: last 10 entries, score each: positive=2, neutral=1, negative=0
+  const last10 = records.slice(-10);
+  const trendData = last10.map(r => {
+    if (r.status === 'timely' || r.status === 'good') return {score: 100, date: r.date.slice(5), color: '#059669'};
+    if (r.status === 'incomplete' || r.status === 'practice') return {score: 50, date: r.date.slice(5), color: '#d97706'};
+    if (r.status === 'still' || r.status === 'notanswer') return {score: 20, date: r.date.slice(5), color: '#dc2626'};
+    return {score: 30, date: r.date.slice(5), color: '#94a3b8'};
+  });
+
+  // Growth direction
+  let growthLabel = '📊 Stable', growthColor = '#64748b', growthBg = '#f1f5f9';
+  if (trendData.length >= 4) {
+    const firstHalf = trendData.slice(0, Math.floor(trendData.length/2)).reduce((a,b)=>a+b.score,0)/Math.floor(trendData.length/2);
+    const secondHalf = trendData.slice(Math.floor(trendData.length/2)).reduce((a,b)=>a+b.score,0)/(trendData.length-Math.floor(trendData.length/2));
+    if (secondHalf > firstHalf + 10) { growthLabel = '📈 Improving'; growthColor = '#059669'; growthBg = '#d1fae5'; }
+    else if (secondHalf < firstHalf - 10) { growthLabel = '📉 Needs Attention'; growthColor = '#dc2626'; growthBg = '#fee2e2'; }
+  }
+
+  // Positive Points
+  const posPoints = [];
+  if (counts.timely > 0) posPoints.push(`⭐ Completed work on time in ${counts.timely} session(s) — shows great discipline`);
+  if (counts.good > 0) posPoints.push(`👍 Showed good work quality in ${counts.good} session(s)`);
+  if (efficiency >= 60) posPoints.push(`✅ Overall work efficiency is ${efficiency}% — above average performance`);
+  if (counts.incomplete === 0 && counts.still === 0 && total > 0) posPoints.push(`🌟 Zero incomplete submissions — excellent consistency`);
+
+  // Negative Points
+  const negPoints = [];
+  if (counts.absent > 0) negPoints.push(`🏠 Absent ${counts.absent} time(s) — attendance needs improvement`);
+  if (counts.cwcopy > 0) negPoints.push(`📓 CW copy not brought ${counts.cwcopy} time(s) — needs to be organized`);
+  if (counts.hwcopy > 0) negPoints.push(`📒 HW copy not brought ${counts.hwcopy} time(s) — checklist needed`);
+  if (counts.incomplete > 0) negPoints.push(`❌ Incomplete work in ${counts.incomplete} session(s) — consistency required`);
+  if (counts.still > 0) negPoints.push(`⚠️ Repeatedly incomplete in ${counts.still} session(s) — serious attention needed`);
+  if (counts.practice > 0) negPoints.push(`📝 Needs extra practice noted ${counts.practice} time(s)`);
+  if (counts.notanswer > 0) negPoints.push(`🤐 Not answering in class ${counts.notanswer} time(s) — confidence building needed`);
+
+  // Suggestions
+  const suggestions = [];
+  if (counts.still >= 2) suggestions.push('💡 Establish a fixed homework time daily at home — 4:30 PM to 5:30 PM works best for most students.');
+  if (counts.absent >= 3) suggestions.push('💡 Regular attendance is critical. Even one missed class creates gaps in understanding Mathematics.');
+  if (counts.cwcopy + counts.hwcopy >= 2) suggestions.push('💡 Use a checklist inside the school bag. Paste a small list of all copies needed daily.');
+  if (counts.practice >= 2) suggestions.push('💡 Give ${name} 10 extra practice questions per day from the chapter being taught.');
+  if (counts.notanswer >= 2) suggestions.push('💡 Encourage ${name} to speak up. Ask them easy questions at home daily to build answering confidence.');
+  if (efficiency >= 70) suggestions.push('💡 Maintain this excellent pace! Introduce challenge-level problems to keep ${name} growing.');
+  if (suggestions.length === 0) suggestions.push('💡 Keep up the regular monitoring. Consistent tracking over 4 weeks gives the most accurate picture of progress.');
+
+  // Build bar chart data (top statuses)
+  const barItems = ALL_STATUSES.filter(s => counts[s] > 0).sort((a,b) => counts[b]-counts[a]);
+
+  // Build trend bars HTML
+  const maxScore = 100;
+  const trendBarsHTML = trendData.length > 0 ? trendData.map(t =>
+    `<div class="trend-bar-col">
+      <div class="trend-bar" style="height:${Math.max(6, t.score * 0.65)}px;background:${t.color};width:100%"></div>
+      <div class="trend-date">${t.date}</div>
+    </div>`
+  ).join('') : '<div style="color:var(--ink4);font-size:12px;padding:10px 0">Not enough data yet</div>';
+
+  // Donut chart: positive vs negative vs absent
+  const dTotal = positives + negatives;
+  const posPct = dTotal > 0 ? Math.round(positives/dTotal*100) : 0;
+  const negPct = dTotal > 0 ? Math.round(negatives/dTotal*100) : 0;
+
+  // Recent entries table
+  const recentHTML = records.slice(-8).reverse().map(r =>
+    `<div style="display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid var(--border)">
+      <span style="font-size:16px">${STATUS_EMOJI[r.status]||'📌'}</span>
+      <div style="flex:1">
+        <div style="font-size:12px;font-weight:700;color:var(--ink)">${STATUS_LABELS[r.status]||r.status}</div>
+        <div style="font-size:10px;color:var(--ink4)">${r.date}</div>
+      </div>
+    </div>`
+  ).join('');
+
+  // Full text report for copy/WA
+  const reportText = buildReportText(name, secName, roll, total, efficiency, completionRate, counts, posPoints, negPoints, suggestions, growthLabel, st);
+
+  document.getElementById('rec-output').innerHTML = `
+
+    <!-- Profile Banner -->
+    <div class="rec-profile-card">
+      <div class="rec-avatar">${initials}</div>
+      <div class="rec-name">${name}</div>
+      <div class="rec-meta">Roll No. ${roll} &nbsp;·&nbsp; Section ${secName} &nbsp;·&nbsp; Total Entries: ${total}</div>
+      <div class="rec-parent-row">
+        ${st.father ? `<div class="rec-parent-chip">👨 ${st.father}</div>` : ''}
+        ${st.mother ? `<div class="rec-parent-chip">👩 ${st.mother}</div>` : ''}
+      </div>
+    </div>
+
+    <!-- Quick Stats -->
+    <div class="stat-row">
+      <div class="mini-stat"><div class="ms-ico">⚡</div><div class="ms-val" style="color:var(--primary)">${efficiency}%</div><div class="ms-lbl">Efficiency</div></div>
+      <div class="mini-stat"><div class="ms-ico">✅</div><div class="ms-val" style="color:var(--green)">${positives}</div><div class="ms-lbl">Positive</div></div>
+      <div class="mini-stat"><div class="ms-ico">⚠️</div><div class="ms-val" style="color:var(--red)">${negatives}</div><div class="ms-lbl">Issues</div></div>
+    </div>
+
+    <!-- Growth Badge -->
+    <div style="margin-bottom:14px;display:flex;align-items:center;gap:10px">
+      <span class="growth-badge" style="background:${growthBg};color:${growthColor}">${growthLabel}</span>
+      <span style="font-size:11px;color:var(--ink3)">${total} entries tracked</span>
+    </div>
+
+    <!-- Status Bar Chart -->
+    <div class="chart-card">
+      <div class="chart-title">📊 Work Status Breakdown</div>
+      ${barItems.length > 0 ? `<div class="bar-chart">
+        ${barItems.map(s => {
+          const pct = total > 0 ? Math.round(counts[s]/total*100) : 0;
+          return `<div class="bar-row">
+            <div class="bar-label">${STATUS_EMOJI[s]} ${STATUS_LABELS[s]||s}</div>
+            <div class="bar-track">
+              <div class="bar-fill" style="width:${Math.max(pct,4)}%;background:${STATUS_COLORS[s]}">${pct}%</div>
+            </div>
+            <div class="bar-count">${counts[s]}</div>
+          </div>`;
+        }).join('')}
+      </div>` : '<div style="color:var(--ink4);font-size:13px">No records yet</div>'}
+    </div>
+
+    <!-- Trend Chart -->
+    <div class="chart-card">
+      <div class="chart-title">📈 Recent Performance Trend (Last 10)</div>
+      <div class="trend-wrap">${trendBarsHTML}</div>
+      <div style="display:flex;gap:12px;margin-top:6px">
+        <span style="font-size:10px;color:#059669;font-weight:700">🟢 Positive</span>
+        <span style="font-size:10px;color:#d97706;font-weight:700">🟡 Partial</span>
+        <span style="font-size:10px;color:#dc2626;font-weight:700">🔴 Needs Work</span>
+      </div>
+    </div>
+
+    <!-- Recent Entries -->
+    ${total > 0 ? `<div class="chart-card">
+      <div class="chart-title">🗓️ Recent Entries</div>
+      ${recentHTML}
+    </div>` : ''}
+
+    <!-- Positive Points -->
+    <div class="insight-card" style="background:#f0fdf4;border-color:#059669">
+      <div class="ins-title" style="color:#059669">💚 Positive Points</div>
+      ${posPoints.length > 0 ? posPoints.map(p => `<div class="insight-item"><div class="ins-dot" style="background:#059669"></div><div class="ins-txt">${p}</div></div>`).join('') : '<div class="insight-item"><div class="ins-txt" style="color:var(--ink3)">Keep tracking to see positive highlights appear here.</div></div>'}
+    </div>
+
+    <!-- Negative Points -->
+    <div class="insight-card" style="background:#fff5f5;border-color:#dc2626">
+      <div class="ins-title" style="color:#dc2626">🔴 Areas Needing Attention</div>
+      ${negPoints.length > 0 ? negPoints.map(p => `<div class="insight-item"><div class="ins-dot" style="background:#dc2626"></div><div class="ins-txt">${p}</div></div>`).join('') : '<div class="insight-item"><div class="ins-txt" style="color:var(--ink3)">No major issues detected — great going!</div></div>'}
+    </div>
+
+    <!-- Suggestions -->
+    <div class="insight-card" style="background:#eef2ff;border-color:#4f46e5">
+      <div class="ins-title" style="color:#4f46e5">💡 Teacher Suggestions & Tips</div>
+      ${suggestions.map(s => `<div class="insight-item"><div class="ins-dot" style="background:#4f46e5"></div><div class="ins-txt">${s.replace(/\${name}/g, name)}</div></div>`).join('')}
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="card">
+      <button class="copy-rec-btn" onclick="copyReport()">📋 Copy Full Report</button>
+      ${st.father ? `<button class="wa-rec-btn" onclick="waReport('father')">📱 Send to Father (WhatsApp)</button>` : ''}
+      ${st.mother ? `<button class="wa-rec-btn-2" onclick="waReport('mother')">📱 Send to Mother (WhatsApp)</button>` : ''}
+      <button onclick="waReport('self')" style="width:100%;padding:13px;background:#1a56db;color:white;border:none;border-radius:var(--radius-sm);font-size:14px;font-weight:800;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:10px">📲 Save to My Number</button>
+      <div style="font-size:11px;font-weight:800;color:#64748b;margin:12px 0 8px;text-transform:uppercase;letter-spacing:0.5px">📤 Download Record</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+        <button onclick="exportRecordCSV()" style="padding:13px 8px;background:#f0fdf4;border:1.5px solid #86efac;border-radius:var(--radius-sm);font-size:12px;font-weight:700;cursor:pointer;color:#15803d;display:flex;flex-direction:column;align-items:center;gap:4px">
+          <span style="font-size:20px">📊</span>Excel / CSV
+        </button>
+        <button onclick="exportRecordHTML()" style="padding:13px 8px;background:#eff6ff;border:1.5px solid #93c5fd;border-radius:var(--radius-sm);font-size:12px;font-weight:700;cursor:pointer;color:#1d4ed8;display:flex;flex-direction:column;align-items:center;gap:4px">
+          <span style="font-size:20px">📄</span>Word / PDF
+        </button>
+      </div>
+    </div>
+
+  `;
+
+  // Store report text for sharing
+  // Add chapter summary block into the output
+  const chapBlock = renderChapterSummaryBlock(sec, roll);
+  if (chapBlock) {
+    const actionCard = document.querySelector('#rec-output .card:last-child');
+    if (actionCard) actionCard.insertAdjacentHTML('beforebegin', chapBlock);
+  }
+  // Extended report with chapters
+  const extReport = window.buildReportTextWithChapters ? window.buildReportTextWithChapters(name, secName, roll, total, efficiency, completionRate, counts, posPoints, negPoints, suggestions, growthLabel, st, sec) : reportText;
+  window._currentReport = extReport;
+  window._currentSt = st;
+}
+
+function buildReportText(name, secName, roll, total, efficiency, completionRate, counts, posPoints, negPoints, suggestions, growthLabel, st) {
+  const pos = counts.good + counts.timely;
+  const neg = Object.values(counts).reduce((a,b)=>a+b,0) - pos;
+  let txt = `📊 STUDENT PROGRESS REPORT
+`;
+  txt += `${'─'.repeat(30)}
+`;
+  txt += `👤 Student: ${name}
+`;
+  txt += `📚 Section: ${secName}  |  Roll No: ${roll}
+`;
+  txt += `📅 Total Entries: ${total}
+`;
+  txt += `⚡ Work Efficiency: ${efficiency}%
+`;
+  txt += `📈 Trend: ${growthLabel}
+
+`;
+
+  txt += `📊 STATUS BREAKDOWN
+${'─'.repeat(30)}
+`;
+  const ALL_STATUSES2 = ['absent','cwcopy','hwcopy','incomplete','still','good','timely','practice','notanswer','ptm'];
+  const STATUS_LABELS2 = {absent:'Student Absent',cwcopy:'CW Copy Not Brought',hwcopy:'HW Copy Not Brought',incomplete:'Incomplete Work',still:'Still Incomplete',good:'Good Work',timely:'Timely Work Complete',practice:'Need More Practice',notanswer:'Not Answering in Class',ptm:'PTM Required'};
+  const STATUS_EMOJI2 = {absent:'🏠',cwcopy:'📓',hwcopy:'📒',incomplete:'❌',still:'⚠️',good:'👍',timely:'⭐',practice:'📝',notanswer:'🤐',ptm:'🤝'};
+  ALL_STATUSES2.forEach(s => {
+    if (counts[s] > 0) txt += `${STATUS_EMOJI2[s]} ${STATUS_LABELS2[s]}: ${counts[s]} time(s)
+`;
+  });
+
+  txt += `
+💚 POSITIVE POINTS
+${'─'.repeat(30)}
+`;
+  if (posPoints.length > 0) posPoints.forEach(p => txt += `✓ ${p}
+`);
+  else txt += `Keep tracking to see positives here.
+`;
+
+  txt += `
+🔴 AREAS NEEDING ATTENTION
+${'─'.repeat(30)}
+`;
+  if (negPoints.length > 0) negPoints.forEach(p => txt += `• ${p}
+`);
+  else txt += `No major issues detected.
+`;
+
+  txt += `
+💡 SUGGESTIONS
+${'─'.repeat(30)}
+`;
+  suggestions.forEach(s => txt += `→ ${s.replace(/\${name}/g, name)}
+`);
+
+  txt += `
+${'─'.repeat(30)}
+`;
+  txt += `📌 Report generated by AOM HW Track — Art of Manish
+`;
+  txt += `🧮 Mathematics Teacher's Record
+`;
+  if (st.father || st.mother) txt += `📞 Parent Contact: ${st.father||''} ${st.mother?'| '+st.mother:''}
+`;
+
+  return txt;
+}
+
+function copyReport() {
+  if (!window._currentReport) { toast('⚠️ No report loaded'); return; }
+  copyToClipboard(window._currentReport, '📋 Full report copied!');
+}
+
+function waReport(who) {
+  if (!window._currentReport || !window._currentSt) { toast('⚠️ No report loaded'); return; }
+  const st = window._currentSt;
+  let num = '';
+  if (who === 'father') num = st.father || '';
+  else if (who === 'mother') num = st.mother || '';
+  else {
+    // Self — open WA without number (user picks contact)
+    window.open('https://wa.me/?text=' + encodeURIComponent(window._currentReport), '_blank');
+    return;
+  }
+  if (!num) { toast('⚠️ Number not saved in Students tab'); return; }
+  const clean = num.replace(/\D/g,'');
+  const waNum = clean.startsWith('91') ? clean : '91'+clean;
+  window.open('https://wa.me/'+waNum+'?text='+encodeURIComponent(window._currentReport), '_blank');
+}
+
+
+
+// ============ CHAPTER TRACKER ============
+// DB.chapters = [ {num:1, name:'Chapter 1 - Integers'}, ... ]
+// DB.chapRecords = { "A": { "rollNum": { "1": { cw: 'green'|'lgreen'|'blue'|'red'|'cross'|'', hw: same }, ... } }, ... }
+
+let chapSec = 'A';   // currently selected section in setup
+let gridSec = 'A';   // currently selected section in grid
+let chapView = 'setup'; // 'setup' | 'grid'
+
+// Init chapters if not set
+function ensureChapData() {
+  if (!DB.chapters) DB.chapters = [];
+  if (!DB.chapRecords) DB.chapRecords = {};
+  (DB.classes||[]).forEach(c => { if (!DB.chapRecords[c.id]) DB.chapRecords[c.id] = {}; });
+}
+
+// ---- View Switcher ----
+function switchChapView(v) {
+  chapView = v;
+  document.getElementById('chap-setup-view').style.display = v === 'setup' ? 'block' : 'none';
+  document.getElementById('chap-grid-view').style.display  = v === 'grid'  ? 'block' : 'none';
+  document.getElementById('cvt-setup').classList.toggle('on', v === 'setup');
+  document.getElementById('cvt-grid').classList.toggle('on',  v === 'grid');
+  if (v === 'grid') renderChapGrid();
+  if (v === 'setup') renderChapSetup();
+}
+
+// ---- Setup: Section select ----
+function selectChapSec(s, btn) {
+  chapSec = s;
+  document.querySelectorAll('.chap-sec-btn[id^="csec-"]').forEach(b => b.classList.remove('on'));
+  btn.classList.add('on');
+}
+
+function selectGridSec(s, btn) {
+  gridSec = s;
+  document.querySelectorAll('.chap-sec-btn[id^="cgsec-"]').forEach(b => b.classList.remove('on'));
+  btn.classList.add('on');
+  renderChapGrid();
+}
+
+// ---- Setup: render chapter list ----
+function renderChapSetup() {
+  ensureChapData();
+  const list = document.getElementById('chap-list-setup');
+  if (!DB.chapters.length) {
+    list.innerHTML = '<div style="color:var(--ink3);font-size:13px;padding:8px 0">No chapters added yet. Click ➕ Add Chapter below.</div>';
+    return;
+  }
+  list.innerHTML = DB.chapters.map((ch, i) => `
+    <div class="chap-list-item">
+      <div class="chap-num-badge">Ch ${ch.num}</div>
+      <input class="chap-name-inp" type="text" value="${ch.name}" placeholder="Chapter name" onchange="DB.chapters[${i}].name=this.value">
+      <button class="chap-del-btn" onclick="deleteChapter(${i})">🗑</button>
+    </div>
+  `).join('');
+}
+
+function addChapter() {
+  ensureChapData();
+  const next = DB.chapters.length > 0 ? Math.max(...DB.chapters.map(c => c.num)) + 1 : 1;
+  DB.chapters.push({ num: next, name: 'Chapter ' + next });
+  renderChapSetup();
+}
+
+function deleteChapter(i) {
+  if (!confirm('Delete Chapter ' + DB.chapters[i].num + '?')) return;
+  DB.chapters.splice(i, 1);
+  renderChapSetup();
+}
+
+function saveChapters() {
+  ensureChapData();
+  // Update names from inputs
+  document.querySelectorAll('.chap-name-inp').forEach((inp, i) => {
+    if (DB.chapters[i]) DB.chapters[i].name = inp.value;
+  });
+  saveDB();
+  toast('✅ Chapters saved!');
+  renderChapGrid();
+}
+
+// ---- Grid: Render table ----
+function renderChapGrid() {
+  ensureChapData();
+  const wrap = document.getElementById('chap-grid-wrap');
+  if (!wrap) return;
+
+  const sec = gridSec;
+  const students = DB.students[sec] || {};
+  const keys = Object.keys(students).map(Number).sort((a,b) => a-b);
+  const chapters = DB.chapters;
+
+  if (!keys.length) {
+    wrap.innerHTML = '<div class="chap-setup-card"><div style="color:var(--ink3);font-size:13px">No students in this section. Add students in the Students tab first.</div></div>';
+    return;
+  }
+  if (!chapters.length) {
+    wrap.innerHTML = '<div class="chap-setup-card"><div style="color:var(--ink3);font-size:13px">No chapters added yet. Go to ⚙️ Setup Chapters tab to add chapters.</div></div>';
+    return;
+  }
+
+  // Build table header
+  let headerCols = '<th class="st-col">Student</th>';
+  chapters.forEach(ch => {
+    headerCols += `<th colspan="2" style="padding:6px 4px"><div style="font-size:9px;font-weight:800">Ch ${ch.num}</div><div style="font-size:8px;opacity:0.8;white-space:nowrap;overflow:hidden;max-width:60px">${ch.name.substring(0,10)}</div><div style="display:flex;margin-top:2px"><span style="flex:1;font-size:8px">CW</span><span style="flex:1;font-size:8px">HW</span></div></th>`;
+  });
+
+  // Build rows
+  let rows = '';
+  keys.forEach(roll => {
+    const st = students[roll];
+    if (!DB.chapRecords[sec]) DB.chapRecords[sec] = {};
+    if (!DB.chapRecords[sec][roll]) DB.chapRecords[sec][roll] = {};
+    let rowCols = `<td class="st-col">
+      <div style="font-size:11px;font-weight:700">${st.name||'Roll '+roll}</div>
+      <div style="font-size:9px;color:var(--ink4)">Roll ${roll}</div>
+    </td>`;
+    chapters.forEach(ch => {
+      const rec = DB.chapRecords[sec][roll][ch.num] || { cw: '', hw: '' };
+      rowCols += `<td class="tick-cell" onclick="cycleTickCW('${sec}',${roll},${ch.num})">${renderTickBtn(rec.cw)}</td>`;
+      rowCols += `<td class="tick-cell" onclick="cycleTickHW('${sec}',${roll},${ch.num})">${renderTickBtn(rec.hw)}</td>`;
+    });
+    rows += `<tr id="crow-${sec}-${roll}">${rowCols}</tr>`;
+  });
+
+  wrap.innerHTML = `
+    <div style="font-size:12px;color:var(--ink3);margin-bottom:8px;font-weight:600">📌 Tap any cell to cycle: Empty → ✅ Green → Light Green → Blue → Red → ❌ Cross → Empty</div>
+    <div class="chap-table-wrap">
+      <table class="chap-table">
+        <thead><tr>${headerCols}</tr></thead>
+        <tbody>${rows}</tbody>
+      </table>
+    </div>
+    <div class="chap-setup-card" style="margin-top:8px">
+      <button class="save-btn" onclick="saveChapRecords()">💾 Save Chapter Records</button>
+    </div>
+  `;
+}
+
+function renderTickBtn(val) {
+  const map = {
+    'green':  '<div class="tick-btn tick-green">✅</div>',
+    'lgreen': '<div class="tick-btn tick-lgreen" style="color:#059669;font-size:14px">✔</div>',
+    'blue':   '<div class="tick-btn tick-blue" style="color:#0284c7;font-size:14px">✔</div>',
+    'red':    '<div class="tick-btn tick-red" style="color:#dc2626;font-size:14px">✔</div>',
+    'cross':  '<div class="tick-btn tick-cross" style="color:#dc2626;font-size:14px">✗</div>',
+    '':       '<div class="tick-btn"></div>'
+  };
+  return map[val] || '<div class="tick-btn"></div>';
+}
+
+const TICK_CYCLE = ['', 'green', 'lgreen', 'blue', 'red', 'cross'];
+
+function cycleTick(sec, roll, chapNum, type) {
+  ensureChapData();
+  if (!DB.chapRecords[sec]) DB.chapRecords[sec] = {};
+  if (!DB.chapRecords[sec][roll]) DB.chapRecords[sec][roll] = {};
+  if (!DB.chapRecords[sec][roll][chapNum]) DB.chapRecords[sec][roll][chapNum] = { cw: '', hw: '' };
+  const cur = DB.chapRecords[sec][roll][chapNum][type] || '';
+  const idx = TICK_CYCLE.indexOf(cur);
+  const next = TICK_CYCLE[(idx + 1) % TICK_CYCLE.length];
+  DB.chapRecords[sec][roll][chapNum][type] = next;
+  // Re-render just that row for performance
+  const students = DB.students[sec] || {};
+  const skeys = Object.keys(students).map(Number).sort((a,b)=>a-b);
+  const chaps = DB.chapters;
+  let rowCols = `<td class="st-col">
+    <div style="font-size:11px;font-weight:700">${students[roll]?students[roll].name||'Roll '+roll:'Roll '+roll}</div>
+    <div style="font-size:9px;color:var(--ink4)">Roll ${roll}</div>
+  </td>`;
+  chaps.forEach(ch => {
+    const rec = DB.chapRecords[sec][roll][ch.num] || { cw: '', hw: '' };
+    rowCols += `<td class="tick-cell" onclick="cycleTickCW('${sec}',${roll},${ch.num})">${renderTickBtn(rec.cw)}</td>`;
+    rowCols += `<td class="tick-cell" onclick="cycleTickHW('${sec}',${roll},${ch.num})">${renderTickBtn(rec.hw)}</td>`;
+  });
+  const row = document.getElementById('crow-' + sec + '-' + roll);
+  if (row) row.innerHTML = rowCols;
+}
+
+function cycleTickCW(sec, roll, chapNum) { cycleTick(sec, roll, chapNum, 'cw'); }
+function cycleTickHW(sec, roll, chapNum) { cycleTick(sec, roll, chapNum, 'hw'); }
+
+function saveChapRecords() {
+  saveDB();
+  toast('✅ Chapter records saved!');
+}
+
+// ---- Chapter summary for Student Record ----
+function getChapterSummary(sec, roll) {
+  ensureChapData();
+  const recs = DB.chapRecords[sec] && DB.chapRecords[sec][roll] ? DB.chapRecords[sec][roll] : {};
+  const chaps = DB.chapters;
+  if (!chaps.length) return null;
+
+  let cwDone = 0, hwDone = 0, cwTotal = 0, hwTotal = 0;
+  const details = [];
+
+  chaps.forEach(ch => {
+    const r = recs[ch.num] || { cw: '', hw: '' };
+    const cwMarked = r.cw !== '' && r.cw !== undefined;
+    const hwMarked = r.hw !== '' && r.hw !== undefined;
+    const cwOk = r.cw === 'green' || r.cw === 'lgreen' || r.cw === 'blue' || r.cw === 'red';
+    const hwOk = r.hw === 'green' || r.hw === 'lgreen' || r.hw === 'blue' || r.hw === 'red';
+    if (cwMarked) cwTotal++;
+    if (hwMarked) hwTotal++;
+    if (cwOk) cwDone++;
+    if (hwOk) hwDone++;
+    details.push({ ch, cw: r.cw || '', hw: r.hw || '' });
+  });
+
+  return { cwDone, hwDone, cwTotal, hwTotal, total: chaps.length, details };
+}
+
+const TICK_LABEL = { green:'✅ Timely', lgreen:'✔ 1 Late', blue:'✔ 2 Late', red:'✔ 3-4 Late', cross:'❌ Not Done', '':'—' };
+const TICK_COLOR = { green:'#059669', lgreen:'#34d399', blue:'#0284c7', red:'#dc2626', cross:'#f87171', '':'#94a3b8' };
+
+function renderChapterSummaryBlock(sec, roll) {
+  const summary = getChapterSummary(sec, roll);
+  if (!summary || summary.total === 0) return '';
+
+  const cwPct = summary.total > 0 ? Math.round(summary.cwDone / summary.total * 100) : 0;
+  const hwPct = summary.total > 0 ? Math.round(summary.hwDone / summary.total * 100) : 0;
+
+  const chapRows = summary.details.map(d => `
+    <tr>
+      <td style="padding:6px 8px;font-size:11px;font-weight:700;color:var(--ink);border-bottom:1px solid var(--border)">Ch ${d.ch.num}<br><span style="font-weight:500;color:var(--ink3);font-size:10px">${d.ch.name}</span></td>
+      <td style="padding:6px;text-align:center;border-bottom:1px solid var(--border)"><span style="font-size:14px;color:${TICK_COLOR[d.cw]}">${d.cw==='green'?'✅':d.cw==='lgreen'||d.cw==='blue'||d.cw==='red'?'✔':d.cw==='cross'?'✗':'—'}</span><br><span style="font-size:9px;color:${TICK_COLOR[d.cw]};font-weight:700">${TICK_LABEL[d.cw]||'—'}</span></td>
+      <td style="padding:6px;text-align:center;border-bottom:1px solid var(--border)"><span style="font-size:14px;color:${TICK_COLOR[d.hw]}">${d.hw==='green'?'✅':d.hw==='lgreen'||d.hw==='blue'||d.hw==='red'?'✔':d.hw==='cross'?'✗':'—'}</span><br><span style="font-size:9px;color:${TICK_COLOR[d.hw]};font-weight:700">${TICK_LABEL[d.hw]||'—'}</span></td>
+    </tr>
+  `).join('');
+
+  return `
+    <div class="chart-card" style="margin-bottom:14px">
+      <div class="chart-title">📚 Chapter-wise CW & HW Record</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px">
+        <div style="background:var(--primary-l);border-radius:10px;padding:12px;text-align:center">
+          <div style="font-size:22px;font-weight:900;color:var(--primary)">${cwPct}%</div>
+          <div style="font-size:10px;font-weight:700;color:var(--ink3);text-transform:uppercase;margin-top:2px">CW Completed</div>
+          <div style="font-size:11px;color:var(--ink2);margin-top:4px">${summary.cwDone} of ${summary.total} chapters</div>
+        </div>
+        <div style="background:#fef3c7;border-radius:10px;padding:12px;text-align:center">
+          <div style="font-size:22px;font-weight:900;color:#d97706">${hwPct}%</div>
+          <div style="font-size:10px;font-weight:700;color:var(--ink3);text-transform:uppercase;margin-top:2px">HW Completed</div>
+          <div style="font-size:11px;color:var(--ink2);margin-top:4px">${summary.hwDone} of ${summary.total} chapters</div>
+        </div>
+      </div>
+      <div style="overflow-x:auto">
+        <table style="width:100%;border-collapse:collapse;min-width:260px">
+          <thead>
+            <tr style="background:linear-gradient(135deg,#4f46e5,#7c3aed)">
+              <th style="padding:8px;text-align:left;color:white;font-size:11px;font-weight:800;min-width:120px">Chapter</th>
+              <th style="padding:8px;text-align:center;color:white;font-size:11px;font-weight:800">CW</th>
+              <th style="padding:8px;text-align:center;color:white;font-size:11px;font-weight:800">HW</th>
+            </tr>
+          </thead>
+          <tbody>${chapRows}</tbody>
+        </table>
+      </div>
+    </div>
+  `;
+}
+
+// ---- Hook into buildReportText to add chapter summary ----
+const _origBuildReport = buildReportText;
+window.buildReportTextWithChapters = function(name, secName, roll, total, efficiency, completionRate, counts, posPoints, negPoints, suggestions, growthLabel, st, sec) {
+  let base = _origBuildReport(name, secName, roll, total, efficiency, completionRate, counts, posPoints, negPoints, suggestions, growthLabel, st);
+  const summary = getChapterSummary(sec, roll);
+  if (summary && summary.total > 0) {
+    base += '\n\n📚 CHAPTER-WISE RECORD\n' + '─'.repeat(30) + '\n';
+    base += `CW Completion: ${summary.cwDone}/${summary.total} chapters (${Math.round(summary.cwDone/summary.total*100)}%)\n`;
+    base += `HW Completion: ${summary.hwDone}/${summary.total} chapters (${Math.round(summary.hwDone/summary.total*100)}%)\n\n`;
+    summary.details.forEach(d => {
+      if (d.cw || d.hw) {
+        base += `Ch ${d.ch.num} ${d.ch.name}:\n`;
+        base += `  CW: ${TICK_LABEL[d.cw]||'Not checked'} | HW: ${TICK_LABEL[d.hw]||'Not checked'}\n`;
+      }
+    });
+  }
+  return base;
+};
+
+// ============ START ============
+initApp();
+</script>
+</body>
+</html>
